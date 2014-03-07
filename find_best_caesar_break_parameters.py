@@ -3,6 +3,7 @@ import collections
 from cipher import *
 from cipherbreak import *
 import itertools
+import csv
 
 corpus = sanitise(''.join([open('shakespeare.txt', 'r').read(), 
     open('sherlock-holmes.txt', 'r').read(), 
@@ -10,14 +11,6 @@ corpus = sanitise(''.join([open('shakespeare.txt', 'r').read(),
 corpus_length = len(corpus)
 
 euclidean_scaled_english_counts = norms.euclidean_scale(english_counts)
-
-# def frequency_compare(text, target_frequency, frequency_scaling, metric):
-#     counts = frequency_scaling(frequencies(text))
-#     return -1 * metric(target_frequency, counts)
-
-# def euclidean_compare(text):
-#     return frequency_compare(text, norms.euclidean_scale(english_counts),
-#             norms.euclidean_scale, norms.euclidean_distance)
 
 metrics = [{'func': norms.l1, 'invert': True, 'name': 'l1'}, 
     {'func': norms.l2, 'invert': True, 'name': 'l2'},
@@ -48,7 +41,6 @@ def make_frequency_compare_function(target_frequency, frequency_scaling, metric,
         return score
     return frequency_compare
 
-
 def scoring_functions():
     return [{'func': make_frequency_compare_function(s['corpus_frequency'], 
                 s['scaling'], m['func'], m['invert']),
@@ -65,6 +57,7 @@ def eval_one_score(scoring_function, message_length):
     print(scoring_function['name'], message_length)
     if scoring_function['name'] not in scores:
         scores[scoring_function['name']] = collections.defaultdict(int)
+        scores[scoring_function['name']]['name'] = scoring_function['name']
     for _ in range(trials):
         sample_start = random.randint(0, corpus_length - message_length)
         sample = corpus[sample_start:(sample_start + message_length)]
@@ -77,14 +70,11 @@ def eval_one_score(scoring_function, message_length):
 
 def show_results():
     with open('caesar_break_parameter_trials.csv', 'w') as f:
-        print(',message_length', file = f)
-        print('scoring,', ', '.join([str(l) for l in message_lengths]), file = f)
+        writer = csv.DictWriter(f, ['name'] + message_lengths, 
+            quoting=csv.QUOTE_NONNUMERIC)
+        writer.writeheader()
         for scoring in sorted(scores.keys()):
-            for length in message_lengths:
-                print(scoring, end='', sep='', file=f)
-                for l in message_lengths:
-                    print(',', scores[scoring][l] / trials, end='', file=f)
-                print('', file = f)
+            writer.writerow(scores[scoring])
 
 eval_scores()
 show_results()

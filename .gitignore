@@ -40,3 +40,6 @@ nosetests.xml
 
 # Sublime text
 *.sublime-workspace
+
+# Logs
+*.log
