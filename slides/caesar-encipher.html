@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 4em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Caesar ciphers
+
+![centre-aligned Caesar wheel](caesarwheel1.gif)
+
+Letter-by-letter enciphering
+
+---
+
+# Enciphering and deciphering
+
+## Arithmetic on letters
+
+Convert .plaintext[letter] → .plaintext[number] → 
+.ciphertext[number] → .ciphertext[letter]
+
+Functions you will need
+
+```python
+ord()
+
+chr()
+
+mod()
+```
+
+* What are good test cases?
+
+---
+
+# The [string module](http://docs.python.org/3.3/library/string.html) is your friend
+
+```python
+import string
+
+string.ascii_letters
+string.ascii_lowercase
+string.ascii_uppercase
+string.digits
+string.punctuation
+```
+
+---
+# DRY and YAGNI
+
+Is your code DRY?
+
+---
+
+# Doctest
+
+* Why document?
+* Why test?
+
+```python
+def caesar_encipher_letter(letter, shift):
+    """Encipher a letter, given a shift amount
+
+    >>> caesar_encipher_letter('a', 1)
+    'b'
+    """
+    if letter in string.ascii_letters:
+```
+
+---
+
+# My tests
+
+```python
+def caesar_encipher_letter(letter, shift):
+    """Encipher a letter, given a shift amount
+
+    >>> caesar_encipher_letter('a', 1)
+    'b'
+    >>> caesar_encipher_letter('a', 2)
+    'c'
+    >>> caesar_encipher_letter('b', 2)
+    'd'
+    >>> caesar_encipher_letter('x', 2)
+    'z'
+    >>> caesar_encipher_letter('y', 2)
+    'a'
+    >>> caesar_encipher_letter('z', 2)
+    'b'
+    >>> caesar_encipher_letter('z', -1)
+    'y'
+    >>> caesar_encipher_letter('a', -1)
+    'z'
+    """
+    if letter in string.ascii_letters:
+```
+---
+
+# The magic doctest incantation
+
+```python
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+```
+
+---
+
+# Doing all the letters
+
+## Test-first developement
+
+1. Write the tests.
+    * They will fail. There is no code.
+2. Write code until the tests pass.
+3. Refactor.
+
+---
+
+# Doing all the letters
+
+## Abysmal
+
+```python
+ciphertext = ''
+for i in range(len(plaintext)):
+    ciphertext += caesar_encipher_letter(plaintext[i], key)
+```
+
+---
+
+# Doing all the letters
+
+## Bad
+
+```python
+ciphertext = ''
+for p in plaintext:
+    ciphertext += caesar_encipher_letter(p, key)
+```
+
+---
+
+# Doing all the letters
+
+## Good (but unPythonic)
+
+```python
+ciphertext = map(lambda p: caesar_encipher_letter(p, key), plaintext)
+```
+
+---
+
+# Doing all the letters
+
+## Best
+
+```python
+ciphertext = [caesar_encipher_letter(p, key) for p in plaintext]
+```
+---
+
+# Not all iterables are equal
+
+```python
+''.join()
+```
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
