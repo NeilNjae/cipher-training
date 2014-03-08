@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>Caesar cipher</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -12,7 +12,7 @@
         font-weight: 400;
         margin-bottom: 0;
       }
-      h1 { font-size: 4em; }
+      h1 { font-size: 3em; }
       h2 { font-size: 2em; }
       h3 { font-size: 1.6em; }
       a, a > code {
@@ -103,35 +103,11 @@ def caesar_encipher_letter(letter, shift):
     'b'
     """
     if letter in string.ascii_letters:
+    .
+    .
+    .
 ```
 
----
-
-# My tests
-
-```python
-def caesar_encipher_letter(letter, shift):
-    """Encipher a letter, given a shift amount
-
-    >>> caesar_encipher_letter('a', 1)
-    'b'
-    >>> caesar_encipher_letter('a', 2)
-    'c'
-    >>> caesar_encipher_letter('b', 2)
-    'd'
-    >>> caesar_encipher_letter('x', 2)
-    'z'
-    >>> caesar_encipher_letter('y', 2)
-    'a'
-    >>> caesar_encipher_letter('z', 2)
-    'b'
-    >>> caesar_encipher_letter('z', -1)
-    'y'
-    >>> caesar_encipher_letter('a', -1)
-    'z'
-    """
-    if letter in string.ascii_letters:
-```
 ---
 
 # The magic doctest incantation
