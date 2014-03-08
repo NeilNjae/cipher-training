@@ -16,7 +16,6 @@
       h2 { font-size: 2em; }
       h3 { font-size: 1.6em; }
       a, a > code {
-        /* color: rgb(249, 38, 114); */
         text-decoration: none;
       }
       code {
@@ -25,6 +24,18 @@
         background: #e7e8e2;
         border-radius: 5px;
         font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
       }
     </style>
   </head>
@@ -35,7 +46,28 @@
 
 ![centre-aligned Caesar wheel](caesarwheel1.gif)
 
-* Letter-by-letter enciphering
+Letter-by-letter enciphering
+
+---
+
+# Enciphering and deciphering
+
+## Arithmetic on letters
+
+Convert .plaintext[letter] → .plaintext[number] → 
+.ciphertext[number] → .ciphertext[letter]
+
+Functions you will need
+
+```python
+ord()
+
+chr()
+
+mod()
+```
+
+* What are good test cases?
 
 ---
 
@@ -43,6 +75,7 @@
 
 ```python
 import string
+
 string.ascii_letters
 string.ascii_lowercase
 string.ascii_uppercase
@@ -51,12 +84,54 @@ string.punctuation
 ```
 
 ---
+# DRY and YAGNI
+
+Is your code DRY?
+
+---
 
 # Doctest
 
 * Why document?
 * Why test?
 
+```python
+def caesar_encipher_letter(letter, shift):
+    """Encipher a letter, given a shift amount
+
+    >>> caesar_encipher_letter('a', 1)
+    'b'
+    """
+    if letter in string.ascii_letters:
+```
+
+---
+
+# My tests
+
+```python
+def caesar_encipher_letter(letter, shift):
+    """Encipher a letter, given a shift amount
+
+    >>> caesar_encipher_letter('a', 1)
+    'b'
+    >>> caesar_encipher_letter('a', 2)
+    'c'
+    >>> caesar_encipher_letter('b', 2)
+    'd'
+    >>> caesar_encipher_letter('x', 2)
+    'z'
+    >>> caesar_encipher_letter('y', 2)
+    'a'
+    >>> caesar_encipher_letter('z', 2)
+    'b'
+    >>> caesar_encipher_letter('z', -1)
+    'y'
+    >>> caesar_encipher_letter('a', -1)
+    'z'
+    """
+    if letter in string.ascii_letters:
+```
 ---
 
 # The magic doctest incantation
@@ -66,6 +141,17 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 ```
+
+---
+
+# Doing all the letters
+
+## Test-first developement
+
+1. Write the tests.
+    * They will fail. There is no code.
+2. Write code until the tests pass.
+3. Refactor.
 
 ---
 
@@ -83,7 +169,7 @@ for i in range(len(plaintext)):
 
 # Doing all the letters
 
-## (Merely) Bad
+## Bad
 
 ```python
 ciphertext = ''
@@ -98,8 +184,7 @@ for p in plaintext:
 ## Good (but unPythonic)
 
 ```python
-ciphertext = map(lambda p: caesar_encipher_letter(p, key), 
-                plaintext)
+ciphertext = map(lambda p: caesar_encipher_letter(p, key), plaintext)
 ```
 
 ---
@@ -109,10 +194,15 @@ ciphertext = map(lambda p: caesar_encipher_letter(p, key),
 ## Best
 
 ```python
-ciphertext = [caesar_encipher_letter(p, key) 
-                for p in plaintext]
+ciphertext = [caesar_encipher_letter(p, key) for p in plaintext]
 ```
+---
 
+# Not all iterables are equal
+
+```python
+''.join()
+```
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
