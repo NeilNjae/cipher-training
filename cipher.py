@@ -155,7 +155,7 @@ def caesar_encipher(message, shift):
     return ''.join(enciphered)
 
 def caesar_decipher(message, shift):
-    """Encipher a message with the Caesar cipher of given shift
+    """Decipher a message with the Caesar cipher of given shift
     
     >>> caesar_decipher('bcd', 1)
     'abc'
