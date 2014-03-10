@@ -170,6 +170,8 @@ def caesar_decipher(message, shift):
     'abc'
     >>> caesar_decipher('cd ez ab', 2)
     'ab cx yz'
+    >>> caesar_decipher('Jgnnq Yqtnf!', 2)
+    'Hello World!'
     """
     return caesar_encipher(message, -shift)
 
