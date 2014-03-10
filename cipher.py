@@ -99,7 +99,7 @@ def deduplicate(text):
     return list(collections.OrderedDict.fromkeys(text))
 
 
-def caesar_encipher_letter(letter, shift):
+def caesar_encipher_letter(accented_letter, shift):
     """Encipher a letter, given a shift amount
 
     >>> caesar_encipher_letter('a', 1)
@@ -118,7 +118,12 @@ def caesar_encipher_letter(letter, shift):
     'y'
     >>> caesar_encipher_letter('a', -1)
     'z'
+    >>> caesar_encipher_letter('A', 1)
+    'B'
+    >>> caesar_encipher_letter('é', 1)
+    'f'
     """
+    letter = unaccent(accented_letter)
     if letter in string.ascii_letters:
         if letter in string.ascii_uppercase:
             alphabet_start = ord('A')
@@ -150,6 +155,8 @@ def caesar_encipher(message, shift):
     'cdezab'
     >>> caesar_encipher('ab cx yz', 2)
     'cd ez ab'
+    >>> caesar_encipher('Héllo World!', 2)
+    'Jgnnq Yqtnf!'
     """
     enciphered = [caesar_encipher_letter(l, shift) for l in message]
     return ''.join(enciphered)
@@ -166,7 +173,7 @@ def caesar_decipher(message, shift):
     """
     return caesar_encipher(message, -shift)
 
-def affine_encipher_letter(letter, multiplier=1, adder=0, one_based=True):
+def affine_encipher_letter(accented_letter, multiplier=1, adder=0, one_based=True):
     """Encipher a letter, given a multiplier and adder
     
     >>> ''.join([affine_encipher_letter(l, 3, 5, True) \
@@ -176,6 +183,7 @@ def affine_encipher_letter(letter, multiplier=1, adder=0, one_based=True):
             for l in string.ascii_uppercase])
     'FILORUXADGJMPSVYBEHKNQTWZC'
     """
+    letter = unaccent(accented_letter)
     if letter in string.ascii_letters:
         if letter in string.ascii_uppercase:
             alphabet_start = ord('A')
@@ -290,7 +298,7 @@ def keyword_encipher(message, keyword, wrap_alphabet=0):
     """
     cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
     cipher_translation = ''.maketrans(string.ascii_lowercase, cipher_alphabet)
-    return message.lower().translate(cipher_translation)
+    return unaccent(message).lower().translate(cipher_translation)
 
 def keyword_decipher(message, keyword, wrap_alphabet=0):
     """Deciphers a message with a keyword substitution cipher.
