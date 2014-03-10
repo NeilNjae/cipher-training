@@ -1,6 +1,7 @@
 import string
+from language_models import *
 
-def caesar_encipher_letter(letter, shift):
+def caesar_encipher_letter(accented_letter, shift):
     """Encipher a letter, given a shift amount
 
     >>> caesar_encipher_letter('a', 1)
@@ -19,7 +20,12 @@ def caesar_encipher_letter(letter, shift):
     'y'
     >>> caesar_encipher_letter('a', -1)
     'z'
+    >>> caesar_encipher_letter('A', 1)
+    'B'
+    >>> caesar_encipher_letter('é', 1)
+    'f'
     """
+    letter = unaccent(accented_letter)
     if letter in string.ascii_letters:
         if letter in string.ascii_uppercase:
             alphabet_start = ord('A')
@@ -51,6 +57,8 @@ def caesar_encipher(message, shift):
     'cdezab'
     >>> caesar_encipher('ab cx yz', 2)
     'cd ez ab'
+    >>> caesar_encipher('Héllo World!', 2)
+    'Jgnnq Yqtnf!'
     """
     enciphered = [caesar_encipher_letter(l, shift) for l in message]
     return ''.join(enciphered)
@@ -64,6 +72,8 @@ def caesar_decipher(message, shift):
     'abc'
     >>> caesar_decipher('cd ez ab', 2)
     'ab cx yz'
+    >>> caesar_decipher('Jgnnq Yqtnf!', 2)
+    'Hello World!'
     """
     return caesar_encipher(message, -shift)
 
