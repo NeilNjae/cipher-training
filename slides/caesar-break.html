@@ -71,12 +71,113 @@ What does English look like?
 
 How do we define "closeness"?
 
+---
+
+# What does English look like?
+
+## Abstraction: frequency of letter counts
+
+Letter | Count
+-------|------
+a | 489107
+b | 92647
+c | 140497
+d | 267381
+e | 756288
+. | .
+. | .
+. | .
+z | 3575
+
+One way of thinking about this is a 26-dimensional vector. 
+
+Create a vector of our text, and one of idealised English. 
+
+The distance between the vectors is how far from English the text is.
+
+---
+
+# Vector distances
+
+
+## FIXME! Diagram of vector subtraction here
+
+Several different distance measures (__metrics__, also called __norms__):
+
+* L<sub>2</sub> norm (Euclidean distance):  `\(|\mathbf{x} - \mathbf{y}| = \sqrt{\sum_i (\mathbf{x}_i - \mathbf{y}_i)^2} \)`
+
+* L<sub>1</sub> norm (Manhattan distance, taxicab distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i |\mathbf{x}_i - \mathbf{y}_i| \)`
+
+* L<sub>3</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \sqrt[3]{\sum_i |\mathbf{x}_i - \mathbf{y}_i|^3} \)`
+
+The higher the power used, the more weight is given to the largest differences in components.
+
+(Extends out to:
+
+* L<sub>0</sub> norm (Hamming distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i \left\{\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{x}_i \neq \mathbf{y}_i , \\ 0 &amp;\mbox{if}\ \mathbf{x}_i = \mathbf{y}_i \end{matrix} \right| \)`
+
+* L<sub>&infin;</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \max_i{(\mathbf{x}_i - \mathbf{y}_i)} \)`
+
+neither of which will be that useful.)
+---
+
+# Normalisation of vectors
+
+Frequency distributions drawn from different sources will have different lengths. For a fair comparison we need to scale them. 
+
+* Eucliean scaling (vector with unit length): `\( \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \sqrt{\mathbf{x}_1^2 + \mathbf{x}_2^2 + \mathbf{x}_3^2 + \dots } }\)`
+
+* Normalisation (components of vector sum to 1): `\( \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }\)`
+
+---
+
+# Angle, not distance
+
+Rather than looking at the distance between the vectors, look at the angle between them.
+
+Vector dot product shows how much of one vector lies in the direction of another: 
+`\( \mathbf{A} \bullet \mathbf{B} = 
+\| \mathbf{A} \| \cdot \| \mathbf{B} \| \cos{\theta} \)`
+
+But, 
+`\( \mathbf{A} \bullet \mathbf{B} = \sum_i \mathbf{A}_i \cdot \mathbf{B}_i \)`
+and `\( \| \mathbf{A} \| = \sum_i \mathbf{A}_i^2 \)`
+
+A bit of rearranging give the cosine simiarity:
+`\( \cos{\theta} = \frac{ \mathbf{A} \bullet \mathbf{B} }{ \| \mathbf{A} \| \cdot \| \mathbf{B} \| } = 
+\frac{\sum_i \mathbf{A}_i \cdot \mathbf{B}_i}{\sum_i \mathbf{A}_i^2 \times \sum_i \mathbf{B}_i^2} \)`
+
+This is independent of vector lengths!
+
+Cosine similarity is 1 if in same direction, 0 if at 90⁰, -1 if antiparallel.
+
+## FIXME! Cosine distance bug: frequencies2 length not squared.
+
+
+## FIXME! Diagram of vector dot product
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
     </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
     <script type="text/javascript">
-      var slideshow = remark.create();
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
     </script>
   </body>
 </html>
