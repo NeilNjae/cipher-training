@@ -15,16 +15,16 @@ euclidean_scaled_english_counts = norms.euclidean_scale(english_counts)
 metrics = [{'func': norms.l1, 'invert': True, 'name': 'l1'}, 
     {'func': norms.l2, 'invert': True, 'name': 'l2'},
     {'func': norms.l3, 'invert': True, 'name': 'l3'},
-    {'func': norms.cosine_distance, 'invert': False, 'name': 'cosine_distance'},
-    {'func': norms.harmonic_mean, 'invert': True, 'name': 'harmonic_mean'},
-    {'func': norms.geometric_mean, 'invert': True, 'name': 'geometric_mean'}]
+    {'func': norms.cosine_similarity, 'invert': False, 'name': 'cosine_similarity'}]
+    # {'func': norms.harmonic_mean, 'invert': True, 'name': 'harmonic_mean'},
+    # {'func': norms.geometric_mean, 'invert': True, 'name': 'geometric_mean'}]
 scalings = [{'corpus_frequency': normalised_english_counts, 
          'scaling': norms.normalise,
          'name': 'normalised'},
         {'corpus_frequency': euclidean_scaled_english_counts, 
          'scaling': norms.euclidean_scale,
          'name': 'euclidean_scaled'}]
-message_lengths = [300, 100, 50, 30, 20, 10, 5]
+message_lengths = [100, 50, 30, 20, 10, 5]
 
 trials = 5000
 
@@ -57,7 +57,6 @@ def eval_one_score(scoring_function, message_length):
     print(scoring_function['name'], message_length)
     if scoring_function['name'] not in scores:
         scores[scoring_function['name']] = collections.defaultdict(int)
-        scores[scoring_function['name']]['name'] = scoring_function['name']
     for _ in range(trials):
         sample_start = random.randint(0, corpus_length - message_length)
         sample = corpus[sample_start:(sample_start + message_length)]
@@ -74,6 +73,7 @@ def show_results():
             quoting=csv.QUOTE_NONNUMERIC)
         writer.writeheader()
         for scoring in sorted(scores.keys()):
+            scores[scoring]['name'] = scoring
             writer.writerow(scores[scoring])
 
 eval_scores()

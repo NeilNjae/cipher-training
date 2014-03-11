@@ -159,7 +159,7 @@ def harmonic_mean(frequencies1, frequencies2):
     return len(frequencies1) / total
 
 
-def cosine_distance(frequencies1, frequencies2):
+def cosine_similarity(frequencies1, frequencies2):
     """Finds the distances between two frequency profiles, expressed as dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
 
@@ -179,7 +179,7 @@ def cosine_distance(frequencies1, frequencies2):
         numerator += frequencies1[k] * frequencies2[k]
         length1 += frequencies1[k]**2
     for k in frequencies2.keys():
-        length2 += frequencies2[k]
+        length2 += frequencies2[k]**2
     return numerator / (length1 ** 0.5 * length2 ** 0.5)
 
 
