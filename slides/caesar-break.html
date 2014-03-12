@@ -141,6 +141,53 @@ Counting letters in _War and Peace_ gives all manner of junk.
 
 * Convert the text in canonical form (lower case, accents removed, non-letters stripped) before counting
 
+```python
+[l.lower() for l in text if ...]
+```
+---
+
+
+# Accents
+
+```python
+>>> caesar_encipher_letter('é', 1)
+```
+What does it produce?
+
+What should it produce?
+
+## Unicode, combining codepoints, and normal forms
+
+Text encodings will bite you when you least expect it.
+
+* urlencoding is the other pain point.
+
+---
+
+# Five minutes on StackOverflow later...
+
+```python
+def unaccent(text):
+    """Remove all accents from letters. 
+    It does this by converting the unicode string to decomposed compatibility
+    form, dropping all the combining accents, then re-encoding the bytes.
+
+    >>> unaccent('hello')
+    'hello'
+    >>> unaccent('HELLO')
+    'HELLO'
+    >>> unaccent('héllo')
+    'hello'
+    >>> unaccent('héllö')
+    'hello'
+    >>> unaccent('HÉLLÖ')
+    'HELLO'
+    """
+    return unicodedata.normalize('NFKD', text).\
+        encode('ascii', 'ignore').\
+        decode('utf-8')
+```
+
 ---
 
 # Vector distances
