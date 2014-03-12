@@ -37,6 +37,9 @@
         text-shadow: 0 0 20px #333;
         padding: 2px 5px;
       }
+       .float-right {
+        float: right;
+      }
     </style>
   </head>
   <body>
@@ -44,7 +47,7 @@
 
 # Breaking caesar ciphers
 
-![centre-aligned Caesar wheel](caesarwheel1.gif)
+![center-aligned Caesar wheel](caesarwheel1.gif)
 
 ---
 
@@ -67,6 +70,7 @@ What steps do we know how to do?
 # How close is it to English?
 
 What does English look like?
+
 * We need a model of English.
 
 How do we define "closeness"?
@@ -97,26 +101,56 @@ The distance between the vectors is how far from English the text is.
 
 ---
 
+# Frequencies of English
+
+But before then how do we count the letters?
+
+* Read a file into a string
+```python
+open()
+read()
+```
+* Count them
+```python
+import collections
+```
+
+---
+
+# Canonical forms
+
+Counting letters in _War and Peace_ gives all manner of junk.
+
+* Convert the text in canonical form (lower case, accents removed, non-letters stripped) before counting
+
+---
+
 # Vector distances
 
-
-## FIXME! Diagram of vector subtraction here
+.float-right[![right-aligned Vector subtraction](vector-subtraction.svg)]
 
 Several different distance measures (__metrics__, also called __norms__):
 
-* L<sub>2</sub> norm (Euclidean distance):  `\(|\mathbf{x} - \mathbf{y}| = \sqrt{\sum_i (\mathbf{x}_i - \mathbf{y}_i)^2} \)`
+* L<sub>2</sub> norm (Euclidean distance): 
+`\(|\mathbf{a} - \mathbf{b}| = \sqrt{\sum_i (\mathbf{a}_i - \mathbf{b}_i)^2} \)`
 
-* L<sub>1</sub> norm (Manhattan distance, taxicab distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i |\mathbf{x}_i - \mathbf{y}_i| \)`
+* L<sub>1</sub> norm (Manhattan distance, taxicab distance): 
+`\(|\mathbf{a} - \mathbf{b}| = \sum_i |\mathbf{a}_i - \mathbf{b}_i| \)`
 
-* L<sub>3</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \sqrt[3]{\sum_i |\mathbf{x}_i - \mathbf{y}_i|^3} \)`
+* L<sub>3</sub> norm: 
+`\(|\mathbf{a} - \mathbf{b}| = \sqrt[3]{\sum_i |\mathbf{a}_i - \mathbf{b}_i|^3} \)`
 
 The higher the power used, the more weight is given to the largest differences in components.
 
 (Extends out to:
 
-* L<sub>0</sub> norm (Hamming distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i \left\{\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{x}_i \neq \mathbf{y}_i , \\ 0 &amp;\mbox{if}\ \mathbf{x}_i = \mathbf{y}_i \end{matrix} \right| \)`
+* L<sub>0</sub> norm (Hamming distance): 
+`$$|\mathbf{a} - \mathbf{b}| = \sum_i \left\{
+\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{a}_i \neq \mathbf{b}_i , \\
+ 0 &amp;\mbox{if}\ \mathbf{a}_i = \mathbf{b}_i \end{matrix} \right. $$`
 
-* L<sub>&infin;</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \max_i{(\mathbf{x}_i - \mathbf{y}_i)} \)`
+* L<sub>&infin;</sub> norm: 
+`\(|\mathbf{a} - \mathbf{b}| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
 
 neither of which will be that useful.)
 ---
@@ -125,15 +159,17 @@ neither of which will be that useful.)
 
 Frequency distributions drawn from different sources will have different lengths. For a fair comparison we need to scale them. 
 
-* Eucliean scaling (vector with unit length): `\( \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \sqrt{\mathbf{x}_1^2 + \mathbf{x}_2^2 + \mathbf{x}_3^2 + \dots } }\)`
+* Eucliean scaling (vector with unit length): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \sqrt{\mathbf{x}_1^2 + \mathbf{x}_2^2 + \mathbf{x}_3^2 + \dots } }$$`
 
-* Normalisation (components of vector sum to 1): `\( \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }\)`
+* Normalisation (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
 
 ---
 
 # Angle, not distance
 
 Rather than looking at the distance between the vectors, look at the angle between them.
+
+.float-right[![right-aligned Vector dot product](vector-dot-product.svg)]
 
 Vector dot product shows how much of one vector lies in the direction of another: 
 `\( \mathbf{A} \bullet \mathbf{B} = 
@@ -144,17 +180,47 @@ But,
 and `\( \| \mathbf{A} \| = \sum_i \mathbf{A}_i^2 \)`
 
 A bit of rearranging give the cosine simiarity:
-`\( \cos{\theta} = \frac{ \mathbf{A} \bullet \mathbf{B} }{ \| \mathbf{A} \| \cdot \| \mathbf{B} \| } = 
-\frac{\sum_i \mathbf{A}_i \cdot \mathbf{B}_i}{\sum_i \mathbf{A}_i^2 \times \sum_i \mathbf{B}_i^2} \)`
+`$$ \cos{\theta} = \frac{ \mathbf{A} \bullet \mathbf{B} }{ \| \mathbf{A} \| \cdot \| \mathbf{B} \| } = 
+\frac{\sum_i \mathbf{A}_i \cdot \mathbf{B}_i}{\sum_i \mathbf{A}_i^2 \times \sum_i \mathbf{B}_i^2} $$`
 
 This is independent of vector lengths!
 
-Cosine similarity is 1 if in same direction, 0 if at 90⁰, -1 if antiparallel.
+Cosine similarity is 1 if in parallel, 0 if perpendicular, -1 if antiparallel.
 
-## FIXME! Cosine distance bug: frequencies2 length not squared.
+---
+
+# An infinite number of monkeys
+
+What is the probability that this string of letters is a sample of English?
+
+Given 'th', 'e' is about six times more likely than 'a' or 'i'.
+
+## Naive Bayes, or the bag of letters
+
+Ignore letter order, just treat each letter individually.
+
+Probability of a text is `\( \prod_i p_i \)`
+
+(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
+
+---
+
+# Which is best?
+
+   | Euclidean | Normalised
+---|-----------|------------  
+L1 |     x     |      x
+L2 |     x     |      x
+L3 |     x     |      x
+Cosine |     x     |      x
+
+And the probability measure!
+
+* Nine different ways of measuring fitness.
+
+## Computing is an empircal science
 
 
-## FIXME! Diagram of vector dot product
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
