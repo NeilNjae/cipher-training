@@ -51,9 +51,27 @@
 
 ---
 
-# Brute force
+# Human vs Machine
 
-How many keys to try?
+Slow but clever vs Dumb but fast
+
+## Human approach
+
+Ciphertext | Plaintext 
+---|---
+![left-aligned Ciphertext frequencies](c1a_frequency_histogram.png) | ![left-aligned English frequencies](english_frequency_histogram.png) 
+
+---
+
+# Human vs machine
+
+## Machine approach
+
+Brute force. 
+
+Try all keys.
+
+* How many keys to try?
 
 ## Basic idea
 
@@ -132,25 +150,25 @@ Counting letters in _War and Peace_ gives all manner of junk.
 Several different distance measures (__metrics__, also called __norms__):
 
 * L<sub>2</sub> norm (Euclidean distance): 
-`\(|\mathbf{a} - \mathbf{b}| = \sqrt{\sum_i (\mathbf{a}_i - \mathbf{b}_i)^2} \)`
+`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt{\sum_i (\mathbf{a}_i - \mathbf{b}_i)^2} \)`
 
 * L<sub>1</sub> norm (Manhattan distance, taxicab distance): 
-`\(|\mathbf{a} - \mathbf{b}| = \sum_i |\mathbf{a}_i - \mathbf{b}_i| \)`
+`\(\|\mathbf{a} - \mathbf{b}\| = \sum_i |\mathbf{a}_i - \mathbf{b}_i| \)`
 
 * L<sub>3</sub> norm: 
-`\(|\mathbf{a} - \mathbf{b}| = \sqrt[3]{\sum_i |\mathbf{a}_i - \mathbf{b}_i|^3} \)`
+`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt[3]{\sum_i |\mathbf{a}_i - \mathbf{b}_i|^3} \)`
 
 The higher the power used, the more weight is given to the largest differences in components.
 
 (Extends out to:
 
 * L<sub>0</sub> norm (Hamming distance): 
-`$$|\mathbf{a} - \mathbf{b}| = \sum_i \left\{
+`$$\|\mathbf{a} - \mathbf{b}\| = \sum_i \left\{
 \begin{matrix} 1 &amp;\mbox{if}\ \mathbf{a}_i \neq \mathbf{b}_i , \\
  0 &amp;\mbox{if}\ \mathbf{a}_i = \mathbf{b}_i \end{matrix} \right. $$`
 
 * L<sub>&infin;</sub> norm: 
-`\(|\mathbf{a} - \mathbf{b}| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
+`\(\|\mathbf{a} - \mathbf{b}\| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
 
 neither of which will be that useful.)
 ---
