@@ -48,9 +48,27 @@
 
 ---
 
-# Brute force
+# Human vs Machine
 
-How many keys to try?
+Slow but clever vs Dumb but fast
+
+## Human approach
+
+Ciphertext | Plaintext 
+---|---
+![left-aligned Ciphertext frequencies](c1a_frequency_histogram.png) | ![left-aligned English frequencies](english_frequency_histogram.png) 
+
+---
+
+# Human vs machine
+
+## Machine approach
+
+Brute force. 
+
+Try all keys.
+
+* How many keys to try?
 
 ## Basic idea
 
@@ -67,6 +85,7 @@ What steps do we know how to do?
 # How close is it to English?
 
 What does English look like?
+
 * We need a model of English.
 
 How do we define "closeness"?
@@ -104,19 +123,19 @@ The distance between the vectors is how far from English the text is.
 
 Several different distance measures (__metrics__, also called __norms__):
 
-* L<sub>2</sub> norm (Euclidean distance):  `\(|\mathbf{x} - \mathbf{y}| = \sqrt{\sum_i (\mathbf{x}_i - \mathbf{y}_i)^2} \)`
+* L<sub>2</sub> norm (Euclidean distance):  `\(\|\mathbf{x} - \mathbf{y}\| = \sqrt{\sum_i (\mathbf{x}_i - \mathbf{y}_i)^2} \)`
 
-* L<sub>1</sub> norm (Manhattan distance, taxicab distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i |\mathbf{x}_i - \mathbf{y}_i| \)`
+* L<sub>1</sub> norm (Manhattan distance, taxicab distance):  `\(\|\mathbf{x} - \mathbf{y}\| = \sum_i |\mathbf{x}_i - \mathbf{y}_i| \)`
 
-* L<sub>3</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \sqrt[3]{\sum_i |\mathbf{x}_i - \mathbf{y}_i|^3} \)`
+* L<sub>3</sub> norm:  `\(\|\mathbf{x} - \mathbf{y}\| = \sqrt[3]{\sum_i |\mathbf{x}_i - \mathbf{y}_i|^3} \)`
 
 The higher the power used, the more weight is given to the largest differences in components.
 
 (Extends out to:
 
-* L<sub>0</sub> norm (Hamming distance):  `\(|\mathbf{x} - \mathbf{y}| = \sum_i \left\{\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{x}_i \neq \mathbf{y}_i , \\ 0 &amp;\mbox{if}\ \mathbf{x}_i = \mathbf{y}_i \end{matrix} \right| \)`
+* L<sub>0</sub> norm (Hamming distance):  `\(\|\mathbf{x} - \mathbf{y}\| = \sum_i \left\{\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{x}_i \neq \mathbf{y}_i , \\ 0 &amp;\mbox{if}\ \mathbf{x}_i = \mathbf{y}_i \end{matrix} \right| \)`
 
-* L<sub>&infin;</sub> norm:  `\(|\mathbf{x} - \mathbf{y}| = \max_i{(\mathbf{x}_i - \mathbf{y}_i)} \)`
+* L<sub>&infin;</sub> norm:  `\(\|\mathbf{x} - \mathbf{y}\| = \max_i{(\mathbf{x}_i - \mathbf{y}_i)} \)`
 
 neither of which will be that useful.)
 ---
