@@ -163,13 +163,13 @@ def cosine_similarity(frequencies1, frequencies2):
     """Finds the distances between two frequency profiles, expressed as dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
 
-    >>> cosine_distance({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
+    >>> cosine_similarity({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
     1.0000000000...
-    >>> cosine_distance({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
+    >>> cosine_similarity({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
     1.0000000000...
-    >>> cosine_distance({'a':0, 'b':2, 'c':0}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
+    >>> cosine_similarity({'a':0, 'b':2, 'c':0}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
     0.5773502691...
-    >>> cosine_distance({'a':0, 'b':1}, {'a':1, 'b':1}) # doctest: +ELLIPSIS
+    >>> cosine_similarity({'a':0, 'b':1}, {'a':1, 'b':1}) # doctest: +ELLIPSIS
     0.7071067811...
     """
     numerator = 0

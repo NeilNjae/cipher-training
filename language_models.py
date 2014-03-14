@@ -140,14 +140,14 @@ def Pbigrams(letters):
     return sum(P2l[p] for p in ngrams(letters, 2))
 
 
-def cosine_distance_score(text):
+def cosine_similarity_score(text):
     """Finds the dissimilarity of a text to English, using the cosine distance
     of the frequency distribution.
 
-    >>> cosine_distance_score('abcabc') # doctest: +ELLIPSIS
-    0.370847405...
+    >>> cosine_similarity_score('abcabc') # doctest: +ELLIPSIS
+    0.26228882...
     """
-    return norms.cosine_distance(english_counts, 
+    return norms.cosine_similarity(english_counts, 
         collections.Counter(sanitise(text)))
 
 

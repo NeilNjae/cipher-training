@@ -50,10 +50,6 @@ def frequencies(text):
     >>> frequencies('abcdefabcdef')['x']
     0
     """
-    #counts = collections.defaultdict(int)
-    #for c in text: 
-    #    counts[c] += 1
-    #return counts
     return collections.Counter(c for c in text)
 
 
@@ -62,13 +58,13 @@ def caesar_break(message, fitness=Pletters):
     
     >>> caesar_break('ibxcsyorsaqcheyklxivoexlevmrimwxsfiqevvmihrsasrxliwyrh' \
           'ecjsppsamrkwleppfmergefifvmhixscsymjcsyqeoixlm') # doctest: +ELLIPSIS
-    (4, -130.849890899...)
+    (4, -130.849989015...)
     >>> caesar_break('wxwmaxdgheetgwuxztgptedbgznitgwwhpguxyhkxbmhvvtlbhgtee' \
           'raxlmhiixweblmxgxwmhmaxybkbgztgwztsxwbgmxgmert') # doctest: +ELLIPSIS
-    (19, -128.82516920...)
+    (19, -128.82410410...)
     >>> caesar_break('yltbbqnqnzvguvaxurorgenafsbezqvagbnornfgsbevpnaabjurer' \
           'svaquvzyvxrnznazlybequrvfohgriraabjtbaruraprur') # doctest: +ELLIPSIS
-    (13, -126.25233502...)
+    (13, -126.25403935...)
     """
     sanitised_message = sanitise(message)
     best_shift = 0
@@ -95,7 +91,7 @@ def affine_break(message, fitness=Pletters):
           'ls umfjsd jlsi zg hfsqysxog. ls dmmdtsd mx jls bats mh bkbsf. ls ' \
           'bfmctsd kfmyxd jls lyj, mztanamyu xmc jm clm cku tmmeaxw kj lai ' \
           'kxd clm ckuxj.') # doctest: +ELLIPSIS
-    ((15, 22, True), -340.611412245...)
+    ((15, 22, True), -340.601181913...)
     """
     sanitised_message = sanitise(message)
     best_multiplier = 0
@@ -131,7 +127,7 @@ def keyword_break(message, wordlist=keywords, fitness=Pletters):
     >>> keyword_break(keyword_encipher('this is a test message for the ' \
           'keyword decipherment', 'elephant', 1), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', 1), -52.8345642265...)
+    (('elephant', 1), -52.834575011...)
     """
     best_keyword = ''
     best_wrap_alphabet = True
@@ -162,7 +158,7 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters, chunksize=500
     >>> keyword_break_mp(keyword_encipher('this is a test message for the ' \
           'keyword decipherment', 'elephant', 1), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', 1), -52.834564226507...)
+    (('elephant', 1), -52.834575011...)
     """
     with Pool() as pool:
         helper_args = [(message, word, wrap, fitness) 
@@ -287,7 +283,7 @@ def vigenere_keyword_break(message, wordlist=keywords, fitness=Pletters):
     >>> vigenere_keyword_break(vigenere_encipher(sanitise('this is a test ' \
              'message for the vigenere decipherment'), 'cat'), \
              wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    ('cat', -52.9479167030...)
+    ('cat', -52.947271216...)
     """
     best_keyword = ''
     best_fit = float("-inf")
@@ -315,7 +311,7 @@ def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
     >>> vigenere_keyword_break_mp(vigenere_encipher(sanitise('this is a test ' \
              'message for the vigenere decipherment'), 'cat'), \
              wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    ('cat', -52.9479167030...)
+    ('cat', -52.947271216...)
     """
     with Pool() as pool:
         helper_args = [(message, word, fitness) 
@@ -345,7 +341,7 @@ def vigenere_frequency_break(message, fitness=Pletters):
             "certain that the theft has been discovered and that I will " \
             "be caught. The SS officer visits less often now that he is " \
             "sure"), 'florence')) # doctest: +ELLIPSIS
-    ('florence', -307.5549865898...)
+    ('florence', -307.5473096791...)
     """
     best_fit = float("-inf")
     best_key = ''
@@ -376,7 +372,7 @@ def beaufort_frequency_break(message, fitness=Pletters):
             "certain that the theft has been discovered and that I will " \
             "be caught. The SS officer visits less often now " \
             "that he is sure"), 'florence')) # doctest: +ELLIPSIS
-    ('florence', -307.5549865898...)
+    ('florence', -307.5473096791...)
     """
     best_fit = float("-inf")
     best_key = ''
