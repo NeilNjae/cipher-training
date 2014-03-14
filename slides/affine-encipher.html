@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Affine ciphers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Affine ciphers
+
+## Explanation of extended Euclid's algorithm from [Programming with finite fields](http://jeremykun.com/2014/03/13/programming-with-finite-fields/)
+
+**Definition:** An element _d_ is called a greatest common divisor (gcd) of _a, b_ if it divides both _a_ and _b_, and for every other _z_ dividing both _a_ and _b_, _z_ divides _d_. 
+
+**Theorem:** For any two integers _a, b_ there exist unique integers _x, y_ such that _ax_ + _by_ = gcd(_a, b_).
+
+We could beat around the bush and try to prove these things in various ways, but when it comes down to it there’s one algorithm of central importance that both computes the gcd and produces the needed linear combination _x, y_. The algorithm is called the Euclidean algorithm. Here is a simple version that just gives the gcd.
+
+```python
+def gcd(a, b):
+   if abs(a) &lt; abs(b):
+      return gcd(b, a)
+ 
+   while abs(b) > 0:
+      q,r = divmod(a,b)
+      a,b = b,r
+ 
+   return a
+```
+
+This works by the simple observation that gcd(_a_, _aq_ + _r_) = gcd(_a_, _r_) (this is an easy exercise to prove directly). So the Euclidean algorithm just keeps applying this rule over and over again: take the remainder when dividing the bigger argument by the smaller argument until the remainder becomes zero. Then gcd(_x_, 0) = 0 because everything divides zero.
+
+Now the so-called ‘extended’ Euclidean algorithm just keeps track of some additional data as it goes (the partial quotients and remainders). Here’s the algorithm.
+
+```python
+def extendedEuclideanAlgorithm(a, b):
+   if abs(b) > abs(a):
+      (x,y,d) = extendedEuclideanAlgorithm(b, a)
+      return (y,x,d)
+ 
+   if abs(b) == 0:
+      return (1, 0, a)
+ 
+   x1, x2, y1, y2 = 0, 1, 1, 0
+   while abs(b) > 0:
+      q, r = divmod(a,b)
+      x = x2 - q*x1
+      y = y2 - q*y1
+      a, b, x2, x1, y2, y1 = b, r, x1, x, y1, y
+ 
+   return (x2, y2, a)
+```
+
+Indeed, the reader who hasn’t seen this stuff before is encouraged to trace out a run for the numbers 4864, 3458. Their gcd is 38 and the two integers are 32 and -45, respectively.
+
+How does this help us compute inverses? Well, if we want to find the inverse of _a_ modulo _p_, we know that their gcd is 1. So compute the _x, y_ such that _ax_ + _py_ = 1, and then reduce both sides mod _p_. You get _ax_ + 0 = 1 _mod p_, which means that _x mod p_ is the inverse of _a_. So once we have the extended Euclidean algorithm our inverse function is trivial to write!
+
+```python
+def inverse(self):
+   x,y,d = extendedEuclideanAlgorithm(self.n, self.p)
+   return IntegerModP(x)
+```
+
+And indeed it works as expected:
+
+```python
+>>> mod23 = IntegersModP(23)
+>>> mod23(7).inverse()
+10 (mod 23)
+>>> mod23(7).inverse() * mod23(7)
+1 (mod 23)
+```
+
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

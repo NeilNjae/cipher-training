@@ -126,12 +126,14 @@ But before then how do we count the letters?
 * Read a file into a string
 ```python
 open()
-read()
+.read()
 ```
 * Count them
 ```python
 import collections
 ```
+
+Create the `language_models.py` file for this.
 
 ---
 
@@ -150,15 +152,17 @@ Counting letters in _War and Peace_ gives all manner of junk.
 # Accents
 
 ```python
->>> caesar_encipher_letter('é', 1)
+>>> 'é' in string.ascii_letters
+>>> 'e' in string.ascii_letters
 ```
-What does it produce?
-
-What should it produce?
 
 ## Unicode, combining codepoints, and normal forms
 
 Text encodings will bite you when you least expect it.
+
+- **é** : LATIN SMALL LETTER E WITH ACUTE (U+00E9)
+
+- **e** + **&nbsp;&#x301;** : LATIN SMALL LETTER E (U+0065) + COMBINING ACUTE ACCENT (U+0301)
 
 * urlencoding is the other pain point.
 
@@ -190,6 +194,15 @@ def unaccent(text):
 
 ---
 
+# Find the frequencies of letters in English
+
+1. Read from `shakespeare.txt`, `sherlock-holmes.txt`, and `war-and-peace.txt`.
+2. Find the frequencies
+3. Sort by count (`sorted(, key=)` ; `.items()`, `.keys()`, `.values()`, `.get()`)
+4. Write counts to `count_1l.txt` 
+
+---
+
 # Vector distances
 
 .float-right[![right-aligned Vector subtraction](vector-subtraction.svg)]
@@ -217,7 +230,7 @@ The higher the power used, the more weight is given to the largest differences i
 * L<sub>&infin;</sub> norm: 
 `\(\|\mathbf{a} - \mathbf{b}\| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
 
-neither of which will be that useful.)
+neither of which will be that useful here, but they keep cropping up.)
 ---
 
 # Normalisation of vectors
@@ -285,6 +298,21 @@ And the probability measure!
 
 ## Computing is an empircal science
 
+Let's do some experiments to find the best solution!
+
+---
+
+## Step 1: get **some** codebreaking working
+
+Let's start with the letter probability norm, because it's easy.
+
+## Step 2: build some other scoring functions
+
+We also need a way of passing the different functions to the keyfinding function.
+
+## Step 3: find the best scoring function
+
+Try them all on random ciphertexts, see which one works best.
 
 
     </textarea>
