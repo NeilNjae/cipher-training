@@ -314,6 +314,39 @@ We also need a way of passing the different functions to the keyfinding function
 
 Try them all on random ciphertexts, see which one works best.
 
+---
+
+# Reading letter probabilities
+
+1. Load the file `count_1l.txt` into a dict, with letters as keys.
+
+2. Normalise the counts (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
+    * Return a new dict
+    * Remember the doctest!
+
+3. Create a dict `Pl` that gives the log probability of a letter
+
+4. Create a function `Pletters` that gives the probability of an iterable of letters
+    * What preconditions should this function have?
+    * Remember the doctest!
+
+---
+
+# Breaking caesar ciphers (at last!)
+
+## Remember the basic idea
+
+```
+for each key:
+    decipher with this key
+    how close is it to English?
+    remember the best key
+```
+
+Try it on the text in `2013/1a.ciphertext`. Does it work?
+
+---
+
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
