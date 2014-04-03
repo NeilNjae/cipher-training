@@ -1,15 +1,8 @@
 import string
 import collections
-import logging
 import math
 from itertools import zip_longest, cycle, chain
 from language_models import *
-
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('cipher.log'))
-logger.setLevel(logging.WARNING)
-#logger.setLevel(logging.INFO)
-#logger.setLevel(logging.DEBUG)
 
 
 modular_division_table = [[0]*26 for _ in range(26)]

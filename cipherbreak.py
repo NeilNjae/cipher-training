@@ -9,6 +9,12 @@ from math import log10
 
 import matplotlib.pyplot as plt
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler('cipher.log'))
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
+
 from cipher import *
 from language_models import *
 
