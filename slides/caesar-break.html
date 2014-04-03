@@ -111,11 +111,34 @@ e | 756288
 . | .
 z | 3575
 
-One way of thinking about this is a 26-dimensional vector. 
+Use this to predict the probability of each letter, and hence the probability of a sequence of letters. 
 
-Create a vector of our text, and one of idealised English. 
+---
 
-The distance between the vectors is how far from English the text is.
+# An infinite number of monkeys
+
+What is the probability that this string of letters is a sample of English?
+
+## Naive Bayes, or the bag of letters
+
+Ignore letter order, just treat each letter individually.
+
+Probability of a text is `\( \prod_i p_i \)`
+
+Letter      | h       | e       | l       | l       | o       | hello
+------------|---------|---------|---------|---------|---------|-------
+Probability | 0.06645 | 0.12099 | 0.04134 | 0.04134 | 0.08052 | 1.10648239 × 10<sup>-6</sup>
+
+Letter      | i       | f       | m       | m       | p       | ifmmp
+------------|---------|---------|---------|---------|---------|-------
+Probability | 0.06723 | 0.02159 | 0.02748 | 0.02748 | 0.01607 | 1.76244520 × 10<sup>-8</sup>
+
+(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
+
+Letter      | h       | e       | l       | l       | o       | hello
+------------|---------|---------|---------|---------|---------|-------
+Probability | -1.1774 | -0.9172 | -1.3836 | -1.3836 | -1.0940 | -5.956055
+
 
 ---
 
@@ -147,7 +170,6 @@ Counting letters in _War and Peace_ gives all manner of junk.
 [l.lower() for l in text if ...]
 ```
 ---
-
 
 # Accents
 
@@ -200,6 +222,80 @@ def unaccent(text):
 2. Find the frequencies (`.update()`)
 3. Sort by count 
 4. Write counts to `count_1l.txt` (`'text{}\n'.format()`)
+
+---
+
+# Reading letter probabilities
+
+1. Load the file `count_1l.txt` into a dict, with letters as keys.
+
+2. Normalise the counts (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
+    * Return a new dict
+    * Remember the doctest!
+
+3. Create a dict `Pl` that gives the log probability of a letter
+
+4. Create a function `Pletters` that gives the probability of an iterable of letters
+    * What preconditions should this function have?
+    * Remember the doctest!
+
+---
+
+# Breaking caesar ciphers
+
+## Remember the basic idea
+
+```
+for each key:
+    decipher with this key
+    how close is it to English?
+    remember the best key
+```
+
+Try it on the text in `2013/1a.ciphertext`. Does it work?
+
+---
+
+# Aside: Logging
+
+Better than scattering `print()`statements through your code
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler('cipher.log'))
+logger.setLevel(logging.WARNING)
+
+        logger.debug('Caesar break attempt using key {0} gives fit of {1} '
+                      'and decrypt starting: {2}'.format(shift, fit, plaintext[:50]))
+
+```
+ * Yes, it's ugly.
+
+ Use `logger.setLevel()` to change the level: CRITICAL, ERROR, WARNING, INFO, DEBUG
+
+---
+
+# Back to frequency of letter counts
+
+Letter | Count
+-------|------
+a | 489107
+b | 92647
+c | 140497
+d | 267381
+e | 756288
+. | .
+. | .
+. | .
+z | 3575
+
+Another way of thinking about this is a 26-dimensional vector. 
+
+Create a vector of our text, and one of idealised English. 
+
+The distance between the vectors is how far from English the text is.
 
 ---
 
@@ -267,22 +363,6 @@ Cosine similarity is 1 if in parallel, 0 if perpendicular, -1 if antiparallel.
 
 ---
 
-# An infinite number of monkeys
-
-What is the probability that this string of letters is a sample of English?
-
-Given 'th', 'e' is about six times more likely than 'a' or 'i'.
-
-## Naive Bayes, or the bag of letters
-
-Ignore letter order, just treat each letter individually.
-
-Probability of a text is `\( \prod_i p_i \)`
-
-(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
-
----
-
 # Which is best?
 
    | Euclidean | Normalised
@@ -302,50 +382,67 @@ Let's do some experiments to find the best solution!
 
 ---
 
-## Step 1: get **some** codebreaking working
+# Experimental harness
 
-Let's start with the letter probability norm, because it's easy.
+## Step 1: build some other scoring functions
 
-## Step 2: build some other scoring functions
+We need a way of passing the different functions to the keyfinding function.
 
-We also need a way of passing the different functions to the keyfinding function.
-
-## Step 3: find the best scoring function
+## Step 2: find the best scoring function
 
 Try them all on random ciphertexts, see which one works best.
 
 ---
 
-# Reading letter probabilities
+# Functions are values!
 
-1. Load the file `count_1l.txt` into a dict, with letters as keys.
+```python
+>>> Pletters
+<function Pletters at 0x7f60e6d9c4d0>
+```
 
-2. Normalise the counts (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
-    * Return a new dict
-    * Remember the doctest!
-
-3. Create a dict `Pl` that gives the log probability of a letter
-
-4. Create a function `Pletters` that gives the probability of an iterable of letters
-    * What preconditions should this function have?
-    * Remember the doctest!
+```python
+def caesar_break(message, fitness=Pletters):
+    """Breaks a Caesar cipher using frequency analysis
+...
+    for shift in range(26):
+        plaintext = caesar_decipher(message, shift)
+        fit = fitness(plaintext)
+```
 
 ---
 
-# Breaking caesar ciphers (at last!)
+# Changing the comparison function
 
-## Remember the basic idea
+* Must be a function that takes a text and returns a score
+    * Better fit must give higher score, opposite of the vector distance norms
 
+```python
+def make_frequency_compare_function(target_frequency, frequency_scaling, metric, invert):
+    def frequency_compare(text):
+        ...
+        return score
+    return frequency_compare
 ```
-for each key:
-    decipher with this key
-    how close is it to English?
-    remember the best key
-```
-
-Try it on the text in `2013/1a.ciphertext`. Does it work?
 
 ---
+
+# Data-driven processing
+
+```python
+metrics = [{'func': norms.l1, 'invert': True, 'name': 'l1'}, 
+    {'func': norms.l2, 'invert': True, 'name': 'l2'},
+    {'func': norms.l3, 'invert': True, 'name': 'l3'},
+    {'func': norms.cosine_similarity, 'invert': False, 'name': 'cosine_similarity'}]
+scalings = [{'corpus_frequency': normalised_english_counts, 
+         'scaling': norms.normalise,
+         'name': 'normalised'},
+        {'corpus_frequency': euclidean_scaled_english_counts, 
+         'scaling': norms.euclidean_scale,
+         'name': 'euclidean_scaled'}]
+```
+
+Use this to make all nine scoring functions.
 
 
     </textarea>
