@@ -271,178 +271,23 @@ logger.setLevel(logging.WARNING)
                       'and decrypt starting: {2}'.format(shift, fit, plaintext[:50]))
 
 ```
- * Yes, it's ugly.
+* Yes, it's ugly.
 
- Use `logger.setLevel()` to change the level: CRITICAL, ERROR, WARNING, INFO, DEBUG
+Use `logger.setLevel()` to change the level: CRITICAL, ERROR, WARNING, INFO, DEBUG
 
----
-
-# Back to frequency of letter counts
-
-Letter | Count
--------|------
-a | 489107
-b | 92647
-c | 140497
-d | 267381
-e | 756288
-. | .
-. | .
-. | .
-z | 3575
-
-Another way of thinking about this is a 26-dimensional vector. 
-
-Create a vector of our text, and one of idealised English. 
-
-The distance between the vectors is how far from English the text is.
+Use `logger.debug()`, `logger.info()`, etc. to log a message.
 
 ---
 
-# Vector distances
+# How much ciphertext do we need?
 
-.float-right[![right-aligned Vector subtraction](vector-subtraction.svg)]
+## Let's do an experiment to find out
 
-Several different distance measures (__metrics__, also called __norms__):
-
-* L<sub>2</sub> norm (Euclidean distance): 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt{\sum_i (\mathbf{a}_i - \mathbf{b}_i)^2} \)`
-
-* L<sub>1</sub> norm (Manhattan distance, taxicab distance): 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sum_i |\mathbf{a}_i - \mathbf{b}_i| \)`
-
-* L<sub>3</sub> norm: 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt[3]{\sum_i |\mathbf{a}_i - \mathbf{b}_i|^3} \)`
-
-The higher the power used, the more weight is given to the largest differences in components.
-
-(Extends out to:
-
-* L<sub>0</sub> norm (Hamming distance): 
-`$$\|\mathbf{a} - \mathbf{b}\| = \sum_i \left\{
-\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{a}_i \neq \mathbf{b}_i , \\
- 0 &amp;\mbox{if}\ \mathbf{a}_i = \mathbf{b}_i \end{matrix} \right. $$`
-
-* L<sub>&infin;</sub> norm: 
-`\(\|\mathbf{a} - \mathbf{b}\| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
-
-neither of which will be that useful here, but they keep cropping up.)
----
-
-# Normalisation of vectors
-
-Frequency distributions drawn from different sources will have different lengths. For a fair comparison we need to scale them. 
-
-* Eucliean scaling (vector with unit length): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \sqrt{\mathbf{x}_1^2 + \mathbf{x}_2^2 + \mathbf{x}_3^2 + \dots } }$$`
-
-* Normalisation (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
-
----
-
-# Angle, not distance
-
-Rather than looking at the distance between the vectors, look at the angle between them.
-
-.float-right[![right-aligned Vector dot product](vector-dot-product.svg)]
-
-Vector dot product shows how much of one vector lies in the direction of another: 
-`\( \mathbf{A} \bullet \mathbf{B} = 
-\| \mathbf{A} \| \cdot \| \mathbf{B} \| \cos{\theta} \)`
-
-But, 
-`\( \mathbf{A} \bullet \mathbf{B} = \sum_i \mathbf{A}_i \cdot \mathbf{B}_i \)`
-and `\( \| \mathbf{A} \| = \sum_i \mathbf{A}_i^2 \)`
-
-A bit of rearranging give the cosine simiarity:
-`$$ \cos{\theta} = \frac{ \mathbf{A} \bullet \mathbf{B} }{ \| \mathbf{A} \| \cdot \| \mathbf{B} \| } = 
-\frac{\sum_i \mathbf{A}_i \cdot \mathbf{B}_i}{\sum_i \mathbf{A}_i^2 \times \sum_i \mathbf{B}_i^2} $$`
-
-This is independent of vector lengths!
-
-Cosine similarity is 1 if in parallel, 0 if perpendicular, -1 if antiparallel.
-
----
-
-# Which is best?
-
-   | Euclidean | Normalised
----|-----------|------------  
-L1 |     x     |      x
-L2 |     x     |      x
-L3 |     x     |      x
-Cosine |     x     |      x
-
-And the probability measure!
-
-* Nine different ways of measuring fitness.
-
-## Computing is an empircal science
-
-Let's do some experiments to find the best solution!
-
----
-
-# Experimental harness
-
-## Step 1: build some other scoring functions
-
-We need a way of passing the different functions to the keyfinding function.
-
-## Step 2: find the best scoring function
-
-Try them all on random ciphertexts, see which one works best.
-
----
-
-# Functions are values!
-
-```python
->>> Pletters
-<function Pletters at 0x7f60e6d9c4d0>
-```
-
-```python
-def caesar_break(message, fitness=Pletters):
-    """Breaks a Caesar cipher using frequency analysis
-...
-    for shift in range(26):
-        plaintext = caesar_decipher(message, shift)
-        fit = fitness(plaintext)
-```
-
----
-
-# Changing the comparison function
-
-* Must be a function that takes a text and returns a score
-    * Better fit must give higher score, opposite of the vector distance norms
-
-```python
-def make_frequency_compare_function(target_frequency, frequency_scaling, metric, invert):
-    def frequency_compare(text):
-        ...
-        return score
-    return frequency_compare
-```
-
----
-
-# Data-driven processing
-
-```python
-metrics = [{'func': norms.l1, 'invert': True, 'name': 'l1'}, 
-    {'func': norms.l2, 'invert': True, 'name': 'l2'},
-    {'func': norms.l3, 'invert': True, 'name': 'l3'},
-    {'func': norms.cosine_similarity, 'invert': False, 'name': 'cosine_similarity'}]
-scalings = [{'corpus_frequency': normalised_english_counts, 
-         'scaling': norms.normalise,
-         'name': 'normalised'},
-        {'corpus_frequency': euclidean_scaled_english_counts, 
-         'scaling': norms.euclidean_scale,
-         'name': 'euclidean_scaled'}]
-```
-
-Use this to make all nine scoring functions.
+1. Load the whole corpus into a string (sanitised)
+2. Select a random chunk of plaintext and a random key
+3. Encipher the text
+4. Score 1 point if `caesar_cipher_break()` recovers the correct key
+5. Repeat many times and with many plaintext lengths
 
 
     </textarea>

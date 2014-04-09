@@ -47,6 +47,37 @@
 
 # Affine ciphers
 
+a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--
+b | e | h | k | n | q | t | w | z | c | f | i | l | o | r | u | x | a | d | g | j | m | p | s | v | y
+
+An extension of Caesar ciphers
+
+* Count the gaps in the letters.
+
+---
+# How affine ciphers work
+
+_ciphertext_letter_ =_plaintext_letter_ × a + b
+
+* Convert letters to numbers
+* Take the total modulus 26
+
+# Enciphering is easy
+
+* Build the `affine_encipher()` function
+
+---
+
+# Deciphering affine ciphers is harder
+
+`$$p = \frac{c - b}{a}$$`
+
+But modular division is hard!
+
+
+---
+
 ## Explanation of extended Euclid's algorithm from [Programming with finite fields](http://jeremykun.com/2014/03/13/programming-with-finite-fields/)
 
 **Definition:** An element _d_ is called a greatest common divisor (gcd) of _a, b_ if it divides both _a_ and _b_, and for every other _z_ dividing both _a_ and _b_, _z_ divides _d_. 
