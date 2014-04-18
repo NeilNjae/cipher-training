@@ -71,12 +71,58 @@ _ciphertext_letter_ =_plaintext_letter_ × a + b
 
 # Deciphering affine ciphers is harder
 
-`$$p = \frac{c - b}{a}$$`
+`$$p = \frac{c - b}{a} \mod 26$$`
 
 But modular division is hard!
 
+Define division as mutiplication by the inverse: `\(\frac{x}{y} = x \times \frac{1}{y} = x \times y^{-1}\)`
+
+A number _x_, when multiplied by its inverse _x_<sup>-1</sup>, gives result of 1.
+
+This is not always defined in modular arithmetic. For instance, 7 × 4 = 28 = 2 mod 26, but 20 × 4 = 80 = 2 mod 26. Therefore, 4 doesn't have a multiplicative inverse (and therefore makes a bad key for affine ciphers).
+
+Result from number theory: only numbers coprime with _n_ have multiplicative inverses in arithmetic mod _n_.
+
+Another result from number theory: for non-negative integers _a_ and _n_, and there exist unique integers _x_ and _y_ such that _ax_ + _ny_ = gcd(_a_, _b_)
+
+Coprime numbers have gcd of 1.
+
+_ax_ + _ny_ = 1 mod _n_. But _ny_ mod _n_ = 0, so _ax_ = 1 mod _n_, so _a_ = _x_<sup>-1</sup>.
+
+Perhaps the algorithm for finding gcds could be useful?
 
 ---
+
+# Euclid's algorithm
+
+World's oldest algorithm.
+
+_a_ = _qb_ + _r_
+
+gcd(_a_, _b_) = gcd(_qb_ + _r_, _b_) = gcd(_r_, _b_) = gcd(_b_, _r_)
+
+Repeatedly apply these steps until _r_ = 0, when the other number = gcd(a,b)
+
+For instance, _a_ = 81, _b_ = 57
+
+* 81 = 1 × 57 + 24
+* 57 = 2 × 24 + 9
+* 24 = 2 × 9 + 6
+* 9 = 1 × 6 + 3
+* 6 = 2 × 3 + 0
+
+Therefore, gcd(81, 57) = 3 and 81_x_ + 57_y_ = 3
+
+Now unfold the derivation to find _x_ and _y_
+
+* 3 = 9 × 1 + 6 × -1
+* 3 = 9 × 1 + (24 - 2 × 9) × -1 = 9 × 3 + 24 × -1
+* 3 = (57 - 2 × 24) × 3 + 24 × -1 = 57 × 3 + 24 × -7
+* 3 = 57 × 3 + (81 - 57 × 1) × -7 = 57 × 10 + 81 × -7 
+
+---
+
+# Example above from http://www-math.ucdenver.edu/~wcherowi/courses/m5410/exeucalg.html
 
 ## Explanation of extended Euclid's algorithm from [Programming with finite fields](http://jeremykun.com/2014/03/13/programming-with-finite-fields/)
 
@@ -100,11 +146,13 @@ def gcd(a, b):
 
 This works by the simple observation that gcd(_a_, _aq_ + _r_) = gcd(_a_, _r_) (this is an easy exercise to prove directly). So the Euclidean algorithm just keeps applying this rule over and over again: take the remainder when dividing the bigger argument by the smaller argument until the remainder becomes zero. Then gcd(_x_, 0) = 0 because everything divides zero.
 
+---
+
 Now the so-called ‘extended’ Euclidean algorithm just keeps track of some additional data as it goes (the partial quotients and remainders). Here’s the algorithm.
 
 ```python
 def extendedEuclideanAlgorithm(a, b):
-   if abs(b) > abs(a):
+   if abs(b) &gt; abs(a):
       (x,y,d) = extendedEuclideanAlgorithm(b, a)
       return (y,x,d)
  
