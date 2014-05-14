@@ -66,8 +66,99 @@ Ciphertext alphabet: start with a keyword, write out the rest of the alphabet, r
 Write out the rest of the alphabet...
 
 1. ...starting from 'a' (keywordabcf...)
-2. ...starting from the last unique letter of the keyword (keywordfgh...)
+2. ...starting from the last letter of the keyword (keywordfgh...)
 3. ...starting from the largest letter of the keyword (keywordzabc...)
+
+---
+
+# A more Pythonic way
+
+_string_`.translate()` and _string_`.maketrans()`
+
+* Make the 'ciphertext' alphabet, relate to the 'plaintext' alphabet (`string.ascii_lowercase`)
+* Use those to make the translation table
+* Enciphering is simply applying `plaintext.translate(enciphering_table)`
+* Deciphering just uses a different table
+
+---
+
+# Making the cipher alphabet from a keyword
+
+Three challenges:
+
+1. How to say which type of cipher alphabet to use
+2. Where to start the rest of the alphabet
+3. Removing duplicate letters
+
+Solutions:
+
+1. Keyword arguments for procedures
+2. sort and slices
+3. Use something like an ordered set
+
+Both enciphering and deciphering need the same keyword-based alphabet, so pull this out into another procedure.
+
+---
+
+# Keyword arguments
+
+Used to:
+1. give a default value for a parameter
+2. allow parameters to be named (not just positional)
+
+Give our `keyword_encipher` and `keyword_decipher` procedures a keyword parameter of `wrap_alphabet`.
+
+Pass this parameter to the `keyword_alphabet` procedure.
+
+## Note: `Enum` introduced in Python 3.4. This is a better solution. 
+
+---
+
+# Deduplicating a sequence
+
+We need
+
+* Something set-like
+* Something ordered
+
+No ordered set in Python, but do have an ordered dict.
+
+* Keys of a dict are a set. 
+* Keys in an ordered dict retain their order (subsequent instances are ignored)
+
+`deduplicated_list = list(collections.OrderedDict.fromkeys(list))`
+
+---
+
+# Sorts and slices
+
+## Recap 
+Write out the rest of the alphabet...
+
+1. ...starting from 'a' (keywordabcf...)
+2. ...starting from the last letter of the keyword (keywordfgh...)
+3. ...starting from the largest letter of the keyword (keywordzabc...)
+
+* Santitise the keyword before we use it
+
+## Cases
+1. As we're deduplicating anyway, just add the entire alphabet to the end of the keyword, then deduplicate. 
+`deduplicate(keyword + string.ascii_lowercase)`
+
+2. and 3. How to find the appropriate letter of the keyword.
+
+Indexing pulls out letters. `'keyword'[0]` = 'k' ; `'keyword'[3]` = 'w' ; `'keyword'[-1]` = 'd'
+Slices pulls out substrings. `'keyword'[1:4]` = 'eyw' ; `'keyword'[:3]` = 'key' ; `'keyword'[5:]` = 'rd'
+
+`deduplicate(keyword + string_ascii_lowercase[from:] + string.ascii_lowercase)`
+
+Question: why not take a slice of the second alphabet copy?
+
+Question: what do we use as the last letter of 'character'? 'r' or 'e'?
+
+`sorted()` will put a string in lexicographical order.
+`.find()` will find an item in a sequence
+
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
