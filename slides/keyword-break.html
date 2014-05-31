@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Affine ciphers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Breaking keyword ciphers
+
+a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--
+k | e | y | w | o | r | d | a | b | c | f | g | h | i | j | l | m | n | p | q | s | t | u | v | x | z
+
+----
+
+# Duplicate and extend your `affine_break()` function
+
+* How to cycle through all the keys? What _are_ all the keys?
+
+* Look at `words.txt`
+
+---
+
+# Test it. 
+
+* `2013/4a.ciphertext`
+* `2013/4b.ciphertext`
+
+This will take a while. Fire up a system monitor. What's wrong?
+
+---
+
+# Python, threads, and the GIL
+
+Thread-safe shared-memory code is hard.
+
+Python's Global Interpreter Lock prevents shooting yourself in the foot.
+
+Where you want true parallelism, need different threads (Python processes).
+* Thread-safe shared-memory code is hard.
+
+The `multiprocessing` library makes this easier.
+
+But before we get there, a couple of diversions...
+
+---
+
+# `map()`
+
+A common task is to apply a function to each item in a sequence, returning a sequence of the results.
+
+```python```
+def double(x):
+    return x * 2
+
+>>> map(double, [1,2,3])
+[2,4,6]
+```
+
+* `map()` is a higher-order function: its first argument is the function that's applied.
+
+How can we use this for keyword cipher breaking?
+
+---
+
+# Mapping keyword decipherings
+
+Define a function that takes a possible key (keyword and cipher type) and returns the key and its fitness.
+
+Use `map()` and `max()` to find the best key
+
+---
+
+# `print()`
+
+How many arguments does this take?
+
+How do you write a function that takes this many arguments?
+
+---
+
+# Function arguments
+
+## Positional, keyword
+
+* Common or garden parameters, as you're used to.
+* `def keyword_encipher(message, keyword, wrap_alphabet=0):`
+
+## Excess positional
+* `def mean(x, *xs):`
+
+First number goes in `x`, remaining go in the tuple `xs`
+
+## Excess keyword
+
+* `def myfunc(arg1=0, **kwargs):`
+
+`kwargs` will be a Dict of the remaining keywords (not `arg1`)
+
+---
+
+# Back to `multiprocessing`
+
+What does `Pool.starmap()` do?
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>
