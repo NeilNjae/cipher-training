@@ -51,7 +51,7 @@ a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | 
 --|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--
 k | e | y | w | o | r | d | a | b | c | f | g | h | i | j | l | m | n | p | q | s | t | u | v | x | z
 
-----
+---
 
 # Duplicate and extend your `affine_break()` function
 
@@ -85,11 +85,11 @@ But before we get there, a couple of diversions...
 
 ---
 
-# `map()`
+# map()
 
 A common task is to apply a function to each item in a sequence, returning a sequence of the results.
 
-```python```
+```python
 def double(x):
     return x * 2
 
@@ -107,11 +107,13 @@ How can we use this for keyword cipher breaking?
 
 Define a function that takes a possible key (keyword and cipher type) and returns the key and its fitness.
 
+* (Also pass in the message and the fitness function)
+
 Use `map()` and `max()` to find the best key
 
 ---
 
-# `print()`
+# Arity of print()
 
 How many arguments does this take?
 
@@ -142,6 +144,35 @@ First number goes in `x`, remaining go in the tuple `xs`
 # Back to `multiprocessing`
 
 What does `Pool.starmap()` do?
+
+---
+
+```python
+from multiprocessing import Pool
+
+def keyword_break_mp(message, wordlist=keywords, fitness=Pletters, chunksize=500):
+    helper_args = [??? for word in wordlist] # One tuple for each possible key
+    with Pool() as pool:
+        breaks = pool.starmap(keyword_break_worker, helper_args, chunksize) 
+        return max(breaks, key=lambda k: k[1])
+
+def keyword_break_worker(???):
+    ???
+    return (key, fitness)
+```
+
+* Gotcha: the function in `Pool.starmap()` must be defined at the top level
+    * This is definitely a "feature"
+
+---
+
+# Performance and chunksize
+
+Try the multiprocessing keyword break. Is it using all the resources?
+
+Setting `chunksize` is an art.
+
+## Map-reduce as a general pattern for multiprocessing
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
