@@ -120,6 +120,7 @@ def log_probability_of_unknown_word(key, N):
     return -log10(N * 10**((len(key) - 2) * 1.4))
 
 Pw = Pdist(datafile('count_1w.txt'), log_probability_of_unknown_word)
+Pw_wrong = Pdist(datafile('count_1w.txt'), lambda _k, N: log10(1/N))
 Pl = Pdist(datafile('count_1l.txt'), lambda _k, _N: 0)
 P2l = Pdist(datafile('count_2l.txt'), lambda _k, _N: 0)
 
@@ -127,6 +128,12 @@ def Pwords(words):
     """The Naive Bayes log probability of a sequence of words.
     """
     return sum(Pw[w.lower()] for w in words)
+
+def Pwords_wrong(words): 
+    """The Naive Bayes log probability of a sequence of words.
+    """
+    return sum(Pw_wrong[w.lower()] for w in words)
+
 
 def Pletters(letters):
     """The Naive Bayes log probability of a sequence of letters.
