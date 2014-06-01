@@ -131,14 +131,14 @@ def keyword_break(message, wordlist=keywords, fitness=Pletters):
     frequency analysis
 
     >>> keyword_break(keyword_encipher('this is a test message for the ' \
-          'keyword decipherment', 'elephant', 1), \
+          'keyword decipherment', 'elephant', Keyword_wrap_alphabet.from_last), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', 1), -52.834575011...)
+    (('elephant', <Keyword_wrap_alphabet.from_last: 1>), -52.834575011...)
     """
     best_keyword = ''
     best_wrap_alphabet = True
     best_fit = float("-inf")
-    for wrap_alphabet in range(3):
+    for wrap_alphabet in Keyword_wrap_alphabet:
         for keyword in wordlist:
             plaintext = keyword_decipher(message, keyword, wrap_alphabet)
             fit = fitness(plaintext)
@@ -162,13 +162,14 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters, chunksize=500
     frequency analysis
 
     >>> keyword_break_mp(keyword_encipher('this is a test message for the ' \
-          'keyword decipherment', 'elephant', 1), \
+          'keyword decipherment', 'elephant', Keyword_wrap_alphabet.from_last), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', 1), -52.834575011...)
+    (('elephant', <Keyword_wrap_alphabet.from_last: 1>), -52.834575011...)
     """
     with Pool() as pool:
         helper_args = [(message, word, wrap, fitness) 
-                       for word in wordlist for wrap in range(3)]
+                       for word in wordlist 
+                       for wrap in Keyword_wrap_alphabet]
         # Gotcha: the helper function here needs to be defined at the top level 
         #   (limitation of Pool.starmap)
         breaks = pool.starmap(keyword_break_worker, helper_args, chunksize) 

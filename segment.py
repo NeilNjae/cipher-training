@@ -11,6 +11,15 @@ def segment(text):
     candidates = ([first]+segment(rest) for first,rest in splits(text))
     return max(candidates, key=language_models.Pwords)
 
+@lru_cache()
+def segment_wrong(text):
+    """Return a list of words that is the best segmentation of text.
+    """
+    if not text: return []
+    candidates = ([first]+segment(rest) for first,rest in splits(text))
+    return max(candidates, key=language_models.Pwords_wrong)
+
+
 def splits(text, L=20):
     """Return a list of all possible (first, rest) pairs, len(first)<=L.
     """
