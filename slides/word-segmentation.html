@@ -47,11 +47,39 @@
 
 # Word segmentation
 
-a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--
-k | e | y | w | o | r | d | a | b | c | f | g | h | i | j | l | m | n | p | q | s | t | u | v | x | z
+`makingsenseofthis`
+`making sense of this`
 
 ----
+
+# The problem
+
+Ciphertext is re-split into groups to hide word bounaries.
+
+How can we rediscover the word boundaries?
+
+---
+
+# Simple approach
+
+1. Try all possible word boundaries
+2. Return the one that looks most like English
+
+What's the complexity of this process?
+
+* (We'll fix that in a bit...)
+
+---
+
+# What do we mean by "looks like English"?
+
+Naïve Bayes bag-of-words worked well for cipher breaking. Can we apply the same intuition here?
+
+Probability of a bag-of-words (ignoring inter-word dependencies).
+
+Finding the counts of words in text is harder than letters.
+
+* More tokens, so need more data to cover sufficient words.
 
 
     </textarea>
