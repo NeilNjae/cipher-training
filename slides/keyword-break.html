@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Affine ciphers</title>
+    <title>Breaking keyword ciphers</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -77,6 +77,7 @@ Thread-safe shared-memory code is hard.
 Python's Global Interpreter Lock prevents shooting yourself in the foot.
 
 Where you want true parallelism, need different threads (Python processes).
+
 * Thread-safe shared-memory code is hard.
 
 The `multiprocessing` library makes this easier.
@@ -126,7 +127,7 @@ How do you write a function that takes this many arguments?
 ## Positional, keyword
 
 * Common or garden parameters, as you're used to.
-* `def keyword_encipher(message, keyword, wrap_alphabet=0):`
+* `def keyword_encipher(message, keyword, Keyword_wrap_alphabet.from_a):`
 
 ## Excess positional
 * `def mean(x, *xs):`

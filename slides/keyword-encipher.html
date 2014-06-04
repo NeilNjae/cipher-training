@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Affine ciphers</title>
+    <title>Keyword ciphers</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -103,6 +103,7 @@ Both enciphering and deciphering need the same keyword-based alphabet, so pull t
 # Keyword arguments
 
 Used to:
+
 1. give a default value for a parameter
 2. allow parameters to be named (not just positional)
 
@@ -110,8 +111,18 @@ Give our `keyword_encipher` and `keyword_decipher` procedures a keyword paramete
 
 Pass this parameter to the `keyword_alphabet` procedure.
 
-## Note: `Enum` introduced in Python 3.4. This is a better solution. 
+## wrap_alphabet has no inherent meaning
+Use Python 3.4's `Enum`
+```python
+from enum import Enum
 
+class Keyword_wrap_alphabet(Enum):
+    from_a = 1
+    from_last = 2
+    from_largest = 3
+```
+
+(Use integers in earlier Pythons)
 ---
 
 # Deduplicating a sequence
@@ -141,6 +152,9 @@ Write out the rest of the alphabet...
 
 * Santitise the keyword before we use it
 
+---
+# Making the keyword alphabet
+
 ## Cases
 1. As we're deduplicating anyway, just add the entire alphabet to the end of the keyword, then deduplicate. 
 `deduplicate(keyword + string.ascii_lowercase)`
@@ -148,6 +162,7 @@ Write out the rest of the alphabet...
 2. and 3. How to find the appropriate letter of the keyword.
 
 Indexing pulls out letters. `'keyword'[0]` = 'k' ; `'keyword'[3]` = 'w' ; `'keyword'[-1]` = 'd'
+
 Slices pulls out substrings. `'keyword'[1:4]` = 'eyw' ; `'keyword'[:3]` = 'key' ; `'keyword'[5:]` = 'rd'
 
 `deduplicate(keyword + string_ascii_lowercase[from:] + string.ascii_lowercase)`
