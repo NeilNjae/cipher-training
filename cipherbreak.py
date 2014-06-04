@@ -133,7 +133,7 @@ def keyword_break(message, wordlist=keywords, fitness=Pletters):
     >>> keyword_break(keyword_encipher('this is a test message for the ' \
           'keyword decipherment', 'elephant', Keyword_wrap_alphabet.from_last), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', <Keyword_wrap_alphabet.from_last: 1>), -52.834575011...)
+    (('elephant', <Keyword_wrap_alphabet.from_last: 2>), -52.834575011...)
     """
     best_keyword = ''
     best_wrap_alphabet = True
@@ -164,7 +164,7 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters, chunksize=500
     >>> keyword_break_mp(keyword_encipher('this is a test message for the ' \
           'keyword decipherment', 'elephant', Keyword_wrap_alphabet.from_last), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', <Keyword_wrap_alphabet.from_last: 1>), -52.834575011...)
+    (('elephant', <Keyword_wrap_alphabet.from_last: 2>), -52.834575011...)
     """
     with Pool() as pool:
         helper_args = [(message, word, wrap, fitness) 

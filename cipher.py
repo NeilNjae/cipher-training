@@ -242,9 +242,9 @@ def affine_decipher(message, multiplier=1, adder=0, one_based=True):
 
 
 class Keyword_wrap_alphabet(Enum):
-    from_a = 0
-    from_last = 1
-    from_largest = 2
+    from_a = 1
+    from_last = 2
+    from_largest = 3
 
 
 def keyword_cipher_alphabet_of(keyword, wrap_alphabet=Keyword_wrap_alphabet.from_a):
