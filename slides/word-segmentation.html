@@ -42,21 +42,27 @@
       }
     </style>
   </head>
+
   <body>
     <textarea id="source">
 
 # Word segmentation
 
 `makingsenseofthis`
+
 `making sense of this`
 
-----
+---
 
 # The problem
 
 Ciphertext is re-split into groups to hide word bounaries.
 
+* HELMU TSCOU SINSA REISU PPOSE KINDI NTHEI ROWNW AYBUT THERE ISLIT TLEWA RMTHI NTHEK INDNE SSIRE CEIVE 
+
 How can we rediscover the word boundaries?
+
+* helmut s cousins are i suppose kind in their own way but there is little warmth in the kindness i receive
 
 ---
 
@@ -80,6 +86,114 @@ Probability of a bag-of-words (ignoring inter-word dependencies).
 Finding the counts of words in text is harder than letters.
 
 * More tokens, so need more data to cover sufficient words.
+
+---
+# Data sparsity and smoothing
+
+`counts_1w.txt` is the 333,333 most common words types, with number of tokens for each, collected by Google.
+
+Doesn't cover a lot of words we want, such as proper nouns.
+
+We'll have to guess the probability of unknown word.
+
+Lots of ways to do this properly (Laplace smoothing, Good-Turing smoothing)...
+
+...but we'll ignore them all.
+
+Assume unknown words have a count of 1.
+
+---
+
+# Storing word probabilities
+
+We want something like a `defaultdict` but with our own default value
+
+Subclass a dict!
+
+Constructor (`__init__`) takes a data file, does all the adding up and taking logs
+
+`__missing__` handles the case when the key is missing
+
+
+```python
+class Pdist(dict):
+    def __init__(self, data=[]):
+        for key, count in data2:
+            ...
+        self.total = ...
+    def __missing__(self, key):
+        return ...
+
+Pw = Pdist(data...)
+
+def Pwords(words):
+    return ...
+```
+
+---
+
+# Testing the bag of words model
+
+```python
+>>> 'hello' in Pw.keys()
+True
+>>> 'inigo' in Pw.keys()
+True
+>>> 'blj' in Pw.keys()
+False
+>>> Pw['hello']
+-4.25147684171819
+>>> Pw['my']
+-2.7442478375632335
+>>> Pw['name']
+-3.102452772219651
+>>> Pw['is']
+-2.096840784739768
+>>> Pw['blj']
+-11.76946906492656
+>>> Pwords(['hello'])
+-4.25147684171819
+>>> Pwords(['hello', 'my'])
+-6.995724679281423
+>>> Pwords(['hello', 'my', 'name'])
+-10.098177451501074
+>>> Pwords(['hello', 'my', 'name', 'is'])
+-12.195018236240843
+>>> Pwords(['hello', 'my', 'name', 'is', 'inigo'])
+-18.927603013570945
+>>> Pwords(['hello', 'my', 'name', 'is', 'blj'])
+-23.964487301167402
+```
+
+---
+
+# Splitting the input
+
+```
+To segment a string:
+    find all possible splits into a first portion and remainder
+    for each split:
+        segment the remainder
+    return the split with highest score
+```
+
+Indexing pulls out letters. `'sometext'[0]` = 's' ; `'keyword'[3]` = 'e' ; `'keyword'[-1]` = 't'
+
+Slices pulls out substrings. `'keyword'[1:4]` = 'ome' ; `'keyword'[:3]` = 'som' ; `'keyword'[5:]` = 'ext'
+
+`range()` will sweep across the string
+
+## Test case
+
+```python
+>>> splits('sometext')
+[('s', 'ometext'), ('so', 'metext'), ('som', 'etext'), ('some', 'text'), 
+ ('somet', 'ext'), ('somete', 'xt'), ('sometex', 't'), ('sometext', '')]
+```
+
+The last one is important
+
+* What if this is the last word of the text?
 
 
     </textarea>
