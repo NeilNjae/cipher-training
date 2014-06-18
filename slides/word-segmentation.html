@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Affine ciphers</title>
+    <title>Word segmentation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -134,35 +134,24 @@ def Pwords(words):
 
 # Testing the bag of words model
 
+
 ```python
->>> 'hello' in Pw.keys()
-True
->>> 'inigo' in Pw.keys()
-True
->>> 'blj' in Pw.keys()
-False
->>> Pw['hello']
--4.25147684171819
->>> Pw['my']
--2.7442478375632335
->>> Pw['name']
--3.102452772219651
->>> Pw['is']
--2.096840784739768
->>> Pw['blj']
+>>> 'hello' in Pw.keys()       >>> Pwords(['hello'])
+True                           -4.25147684171819
+>>> 'inigo' in Pw.keys()       >>> Pwords(['hello', 'my'])
+True                           -6.995724679281423
+>>> 'blj' in Pw.keys()         >>> Pwords(['hello', 'my', 'name'])
+False                          -10.098177451501074
+>>> Pw['hello']                >>> Pwords(['hello', 'my', 'name', 'is'])
+-4.25147684171819              -12.195018236240843
+>>> Pw['my']                   >>> Pwords(['hello', 'my', 'name', 'is', 'inigo'])
+-2.7442478375632335            -18.927603013570945
+>>> Pw['name']                 >>> Pwords(['hello', 'my', 'name', 'is', 'blj'])
+-3.102452772219651             -23.964487301167402
+>>> Pw['is']                   
+-2.096840784739768             
+>>> Pw['blj']                  
 -11.76946906492656
->>> Pwords(['hello'])
--4.25147684171819
->>> Pwords(['hello', 'my'])
--6.995724679281423
->>> Pwords(['hello', 'my', 'name'])
--10.098177451501074
->>> Pwords(['hello', 'my', 'name', 'is'])
--12.195018236240843
->>> Pwords(['hello', 'my', 'name', 'is', 'inigo'])
--18.927603013570945
->>> Pwords(['hello', 'my', 'name', 'is', 'blj'])
--23.964487301167402
 ```
 
 ---
@@ -194,6 +183,164 @@ Slices pulls out substrings. `'keyword'[1:4]` = 'ome' ; `'keyword'[:3]` = 'som' 
 The last one is important
 
 * What if this is the last word of the text?
+
+---
+
+# Effeciency and memoisation
+
+* helmut s cousins are i suppose kind in their own way but there is little warmth in the kindness i receive
+
+At any stage, can consider the sentence as prefix, word, suffix
+
+* `littlewarmthin | the | kindness i receive`
+* `littlewarmthi | nthe | kindness i receive`
+* `littlewarmth | inthe | kindness i receive`
+* `littlewarmt | hinthe | kindness i receive`
+
+P(sentence) = P(prefix) × P(word) × P(suffix)
+
+* We're assuming independence of sections.
+* For a given word/suffix split, there is only one best segmentation of the suffix.
+* Best segmentation of sentence (with split here) must have the best segmentation of the suffix.
+* Once we've found it, no need to recalculate it.
+
+## What's the complexity now?
+
+---
+
+# Memoisation
+
+* Maintain a table of previously-found results
+* Every time we're asked to calculate a segmentation, look in the table.
+* If it's in the table, just return that.
+* If not, calculate it and store the result in the table.
+
+Wrap the segment function in something that maintains that table.
+
+In the standard library: `lru_cache` as a function decorator.
+
+```python
+from functools import lru_cache
+
+@lru_cache()
+def segment(text):
+    ...
+```
+* (Plenty of tutorials online on function decorators.)
+
+---
+
+# Implmentation detail
+
+You'll hit Python's recursion level limit.
+
+Easy to reset:
+
+```python
+import sys
+sys.setrecursionlimit(1000000)
+```
+
+---
+
+# Testing segmentation
+
+```python
+>>> segment('hello')
+['hello']
+>>> segment('hellomy')
+['hello', 'my']
+>>> segment('hellomyname')
+['hello', 'my', 'name']
+>>> segment('hellomynameis')
+['hellomynameis']
+```
+
+Oh.
+
+Why?
+
+---
+
+# A broken language model
+
+```python
+>>> Pwords(['hello'])
+-4.25147684171819
+>>> Pwords(['hello', 'my'])
+-6.995724679281423
+>>> Pwords(['hello', 'my', 'name'])
+-10.098177451501074
+>>> Pwords(['hello', 'my', 'name', 'is'])
+-12.195018236240843
+
+>>> Pw['is']                   
+-2.096840784739768             
+>>> Pw['blj']                  
+-11.76946906492656
+```
+
+Need a better estimate for probability of unknown words.
+
+Needs to take account of length of word.
+
+* Longer words are less probable.
+
+## To IPython for investigation!
+
+---
+
+# Making Pdist more flexible
+
+Want to give a sensible default for unknown elements
+
+* But this will vary by referent
+* Different languages, *n*-grams, etc. 
+
+Make it a parameter!
+
+---
+
+# Hint
+
+```python
+class Pdist(dict):
+    def __init__(self, data=[], estimate_of_missing=None):
+        for key, count in data2:
+            ...
+        self.total = ...
+    def __missing__(self, key):
+        if estimate_of_missing:
+            return estimate_of_missing(key, self.total)
+        else:
+            return ...
+
+def log_probability_of_unknown_word(key, N):
+    return -log10(N * 10**((len(key) - 2) * 1.4))
+
+Pw = Pdist(datafile('count_1w.txt'), log_probability_of_unknown_word)            
+```
+
+---
+
+# Testing segmentation again
+
+```python
+>>> segment('hello')
+['hello']
+>>> segment('hellomy')
+['hello', 'my']
+>>> segment('hellomyname')
+['hello', 'my', 'name']
+>>> segment('hellomynameis')
+['hello', 'my', 'name', 'is']
+>>> ' '.join(segment(sanitise('HELMU TSCOU SINSA REISU PPOSE KINDI NTHEI ROWNW '
+                              'AYBUT THERE ISLIT TLEWA RMTHI NTHEK INDNE SSIRE CEIVE ')))
+'helmut s cousins are i suppose kind in their own way but there is 
+ little warmth in the kindness i receive'
+```
+
+Try it out on the full decrypt of `2013/2b.ciphertext` (it's a Caesar cipher)
 
 
     </textarea>
