@@ -213,37 +213,39 @@ def column_transposition_break_mp(message, translist=transpositions,
                      fitness=Pbigrams, chunksize=500):
     """Breaks a column transposition cipher using a dictionary and 
     n-gram frequency analysis
+
+    >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in the \
+             minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        'encipher'), \
+        translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
+                   (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
+                   (6, 1, 0, 4, 5, 3, 2): ['keyword']}) # doctest: +ELLIPSIS
+    (((2, 0, 5, 3, 1, 4, 6), False, False), -709.4646722...)
+    >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in the \
+             minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        'encipher'), \
+        translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
+                   (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
+                   (6, 1, 0, 4, 5, 3, 2): ['keyword']}, \
+        fitness=Ptrigrams) # doctest: +ELLIPSIS
+    (((2, 0, 5, 3, 1, 4, 6), False, False), -997.0129085...)
     """
-    # >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
-    #         "It is a truth universally acknowledged, that a single man in \
-    #          possession of a good fortune, must be in want of a wife. However \
-    #          little known the feelings or views of such a man may be on his \
-    #          first entering a neighbourhood, this truth is so well fixed in the \
-    #          minds of the surrounding families, that he is considered the \
-    #          rightful property of some one or other of their daughters."), \
-    #     'encipher'), \
-    #     translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
-    #                (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
-    #                (6, 1, 0, 4, 5, 3, 2): ['keyword']}) # doctest: +ELLIPSIS
-    # (((2, 0, 5, 3, 1, 4, 6), False), 0.0628106372...)
-    # >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
-    #         "It is a truth universally acknowledged, that a single man in \
-    #          possession of a good fortune, must be in want of a wife. However \
-    #          little known the feelings or views of such a man may be on his \
-    #          first entering a neighbourhood, this truth is so well fixed in the \
-    #          minds of the surrounding families, that he is considered the \
-    #          rightful property of some one or other of their daughters."), \
-    #     'encipher'), \
-    #     translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
-    #                (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
-    #                (6, 1, 0, 4, 5, 3, 2): ['keyword']}, \
-    #     target_counts=normalised_english_trigram_counts) # doctest: +ELLIPSIS
-    # (((2, 0, 5, 3, 1, 4, 6), False), 0.0592259560...)
-    # """
     with Pool() as pool:
-        helper_args = [(message, trans, columnwise, fitness) 
+        helper_args = [(message, trans, fillcolumnwise, emptycolumnwise, 
+                          fitness) 
                        for trans in translist.keys() 
-                       for columnwise in [True, False]]
+                       for fillcolumnwise in [True, False]
+                       for emptycolumnwise in [True, False]]
         # Gotcha: the helper function here needs to be defined at the top level 
         #   (limitation of Pool.starmap)
         breaks = pool.starmap(column_transposition_break_worker, 
@@ -251,36 +253,17 @@ def column_transposition_break_mp(message, translist=transpositions,
         return max(breaks, key=lambda k: k[1])
 column_transposition_break = column_transposition_break_mp
 
-def column_transposition_break_worker(message, transposition, columnwise, 
-                                        fitness):
-    plaintext = column_transposition_decipher(message, transposition, columnwise=columnwise)
+def column_transposition_break_worker(message, transposition, 
+        fillcolumnwise, emptycolumnwise, fitness):
+    plaintext = column_transposition_decipher(message, transposition, 
+        fillcolumnwise=fillcolumnwise, emptycolumnwise=emptycolumnwise)
     fit = fitness(sanitise(plaintext))
     logger.debug('Column transposition break attempt using key {0} '
                          'gives fit of {1} and decrypt starting: {2}'.format(
                              transposition, fit, 
                              sanitise(plaintext)[:50]))
-    return (transposition, columnwise), fit
+    return (transposition, fillcolumnwise, emptycolumnwise), fit
 
-
-def transposition_break_exhaustive(message, fitness=Pbigrams):
-    best_transposition = ''
-    best_pw = float('-inf')
-    for keylength in range(1, 21):
-        if len(message) % keylength == 0:
-            for transposition in permutations(range(keylength)):
-                for columnwise in [True, False]:
-                    plaintext = column_transposition_decipher(message, 
-                        transposition, columnwise=columnwise)
-                    fit=fitness(plaintext)
-                    logger.debug('Column transposition break attempt using key {0} {1} '
-                         'gives fit of {2} and decrypt starting: {3}'.format(
-                             transposition, columnwise, pw, 
-                             sanitise(plaintext)[:50]))
-                    if fit > best_fit:
-                        best_transposition = transposition
-                        best_columnwise = columnwise
-                        best_fit = fit
-    return (best_transposition, best_columnwise), best_pw
 
 
 def vigenere_keyword_break(message, wordlist=keywords, fitness=Pletters):
