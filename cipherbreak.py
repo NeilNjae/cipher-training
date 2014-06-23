@@ -2,7 +2,7 @@ import string
 import collections
 import norms
 import logging
-from itertools import zip_longest, cycle, permutations
+from itertools import zip_longest, cycle, permutations, starmap
 from segment import segment
 from multiprocessing import Pool
 from math import log10
@@ -183,31 +183,6 @@ def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
                      wrap_alphabet, fit, sanitise(plaintext)[:50]))
     return (keyword, wrap_alphabet), fit
 
-def scytale_break(message, fitness=Pbigrams):
-    """Breaks a Scytale cipher
-    
-    >>> scytale_break('tfeulchtrtteehwahsdehneoifeayfsondmwpltmaoalhikotoere' \
-           'dcweatehiplwxsnhooacgorrcrcraotohsgullasenylrendaianeplscdriioto' \
-           'aek') # doctest: +ELLIPSIS
-    (6, -281.276219108...)
-    """
-    best_key = 0
-    best_fit = float("-inf")
-    for key in range(1, 20):
-        if len(message) % key == 0:
-            plaintext = scytale_decipher(message, key)
-            fit = fitness(sanitise(plaintext))
-            logger.debug('Scytale break attempt using key {0} gives fit of '
-                         '{1} and decrypt starting: {2}'.format(key, 
-                             fit, sanitise(plaintext)[:50]))
-            if fit > best_fit:
-                best_fit = fit
-                best_key = key
-    logger.info('Scytale break best fit with key {0} gives fit of {1} and '
-                'decrypt starting: {2}'.format(best_key, best_fit, 
-                    sanitise(scytale_decipher(message, best_key))[:50]))
-    return best_key, best_fit
-
 
 def column_transposition_break_mp(message, translist=transpositions, 
                      fitness=Pbigrams, chunksize=500):
@@ -265,33 +240,44 @@ def column_transposition_break_worker(message, transposition,
     return (transposition, fillcolumnwise, emptycolumnwise), fit
 
 
+def scytale_break_mp(message, max_key_length=20,
+                     fitness=Pbigrams, chunksize=500):
+    """Breaks a scytale cipher using a range of lengths and
+    n-gram frequency analysis
 
-def vigenere_keyword_break(message, wordlist=keywords, fitness=Pletters):
-    """Breaks a vigenere cipher using a dictionary and 
-    frequency analysis
-    
-    >>> vigenere_keyword_break(vigenere_encipher(sanitise('this is a test ' \
-             'message for the vigenere decipherment'), 'cat'), \
-             wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    ('cat', -52.947271216...)
+    >>> scytale_break_mp(scytale_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in the \
+             minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        5)) # doctest: +ELLIPSIS
+    (5, -709.4646722...)
+    >>> scytale_break_mp(scytale_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in the \
+             minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        5), \
+        fitness=Ptrigrams) # doctest: +ELLIPSIS
+    (5, -997.0129085...)
     """
-    best_keyword = ''
-    best_fit = float("-inf")
-    for keyword in wordlist:
-        plaintext = vigenere_decipher(message, keyword)
-        fit = fitness(plaintext)
-        logger.debug('Vigenere break attempt using key {0} '
-                         'gives fit of {1} and decrypt starting: {2}'.format(
-                             keyword, fit, 
-                             sanitise(plaintext)[:50]))
-        if fit > best_fit:
-            best_fit = fit
-            best_keyword = keyword
-    logger.info('Vigenere break best fit with key {0} gives fit '
-                'of {1} and decrypt starting: {2}'.format(best_keyword, 
-                    best_fit, sanitise(
-                        vigenere_decipher(message, best_keyword))[:50]))
-    return best_keyword, best_fit
+    with Pool() as pool:
+        helper_args = [(message, trans, False, True, fitness) 
+            for trans in 
+                [[col for col in range(math.ceil(len(message)/rows))] 
+                    for rows in range(1,max_key_length+1)]]
+        # Gotcha: the helper function here needs to be defined at the top level 
+        #   (limitation of Pool.starmap)
+        breaks = pool.starmap(column_transposition_break_worker, 
+          helper_args, chunksize) 
+        best = max(breaks, key=lambda k: k[1]) 
+        return math.trunc(len(message) / len(best[0][0])), best[1]
+scytale_break = scytale_break_mp
+
 
 def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters, 
                      chunksize=500):
@@ -310,6 +296,7 @@ def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
         #   (limitation of Pool.starmap)
         breaks = pool.starmap(vigenere_keyword_break_worker, helper_args, chunksize) 
         return max(breaks, key=lambda k: k[1])
+vigenere_keyword_break = vigenere_keyword_break_mp
 
 def vigenere_keyword_break_worker(message, keyword, fitness):
     plaintext = vigenere_decipher(message, keyword)
@@ -321,7 +308,7 @@ def vigenere_keyword_break_worker(message, keyword, fitness):
 
 
 
-def vigenere_frequency_break(message, fitness=Pletters):
+def vigenere_frequency_break(message, max_key_length=20, fitness=Pletters):
     """Breaks a Vigenere cipher with frequency analysis
 
     >>> vigenere_frequency_break(vigenere_encipher(sanitise("It is time to " \
@@ -333,26 +320,19 @@ def vigenere_frequency_break(message, fitness=Pletters):
             "sure"), 'florence')) # doctest: +ELLIPSIS
     ('florence', -307.5473096791...)
     """
-    best_fit = float("-inf")
-    best_key = ''
-    sanitised_message = sanitise(message)
-    for trial_length in range(1, 20):
-        splits = every_nth(sanitised_message, trial_length)
+    def worker(message, key_length, fitness):
+        splits = every_nth(sanitised_message, key_length)
         key = ''.join([chr(caesar_break(s)[0] + ord('a')) for s in splits])
-        plaintext = vigenere_decipher(sanitised_message, key)
+        plaintext = vigenere_decipher(message, key)
         fit = fitness(plaintext)
-        logger.debug('Vigenere key length of {0} ({1}) gives fit of {2}'.
-                     format(trial_length, key, fit))
-        if fit > best_fit:
-            best_fit = fit
-            best_key = key
-    logger.info('Vigenere break best fit with key {0} gives fit '
-                'of {1} and decrypt starting: {2}'.format(best_key, 
-                    best_fit, sanitise(
-                        vigenere_decipher(message, best_key))[:50]))
-    return best_key, best_fit
+        return key, fit
+    sanitised_message = sanitise(message)
+    results = starmap(worker, [(sanitised_message, i, fitness) 
+        for i in range(1, max_key_length+1)])
+    return max(results, key=lambda k: k[1])
 
-def beaufort_frequency_break(message, fitness=Pletters):
+
+def beaufort_frequency_break(message, max_key_length=20, fitness=Pletters):
     """Breaks a Beaufort cipher with frequency analysis
 
     >>> beaufort_frequency_break(beaufort_encipher(sanitise("It is time to " \
@@ -364,25 +344,16 @@ def beaufort_frequency_break(message, fitness=Pletters):
             "that he is sure"), 'florence')) # doctest: +ELLIPSIS
     ('florence', -307.5473096791...)
     """
-    best_fit = float("-inf")
-    best_key = ''
-    sanitised_message = sanitise(message)
-    for trial_length in range(1, 20):
-        splits = every_nth(sanitised_message, trial_length)
+    def worker(message, key_length, fitness):
+        splits = every_nth(sanitised_message, key_length)
         key = ''.join([chr(-caesar_break(s)[0] % 26 + ord('a')) for s in splits])
-        plaintext = beaufort_decipher(sanitised_message, key)
+        plaintext = beaufort_decipher(message, key)
         fit = fitness(plaintext)
-        logger.debug('Beaufort key length of {0} ({1}) gives fit of {2}'.
-                     format(trial_length, key, fit))
-        if fit > best_fit:
-            best_fit = fit
-            best_key = key
-    logger.info('Beaufort break best fit with key {0} gives fit '
-                'of {1} and decrypt starting: {2}'.format(best_key, 
-                    best_fit, sanitise(
-                        beaufort_decipher(message, best_key))[:50]))
-    return best_key, best_fit
-
+        return key, fit
+    sanitised_message = sanitise(message)
+    results = starmap(worker, [(sanitised_message, i, fitness) 
+        for i in range(1, max_key_length+1)])
+    return max(results, key=lambda k: k[1])
 
 
 def plot_frequency_histogram(freqs, sort_key=None):
