@@ -86,6 +86,28 @@ But before we get there, a couple of diversions...
 
 ---
 
+# DRYing code
+
+Three cipher breaking tasks so far.
+
+All working on the same principle:
+
+```
+find a way to enumerate all the possible keys
+initialise 'best so far'
+for each key:
+    decipher message with this key
+    score it
+    if it's better than the best so far:
+        update best so far
+```
+
+Repetition of code is a bad smell.
+
+Separate the 'try all keys, keep the best' logic from the 'score this one key' logic.
+
+---
+
 # map()
 
 A common task is to apply a function to each item in a sequence, returning a sequence of the results.

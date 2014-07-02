@@ -101,7 +101,7 @@ World's oldest algorithm.
 
 _a_ = _qb_ + _r_ ; gcd(_a_, _b_) = gcd(_qb_ + _r_, _b_) = gcd(_r_, _b_) = gcd(_b_, _r_)
 
-Repeatedly apply these steps until _r_ = 0, when the other number = gcd(a,b). For instance, _a_ = 81, _b_ = 57
+Repeatedly apply these steps until _r_ = 0, when the other number = gcd(_a_, _b_). For instance, _a_ = 81, _b_ = 57
 
 * 81 = 1 × 57 + 24
 * 57 = 2 × 24 + 9
@@ -129,6 +129,8 @@ Can we do this in one pass?
 ---
 
 # Triple constraints
+
+.float-right[![right-aligned GCD](fast-good-cheap.gif)]
 
 ## Fast, cheap, good: pick two
 
