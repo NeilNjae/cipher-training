@@ -27,7 +27,7 @@ def every_nth(text, n, fillvalue=''):
     >>> every_nth(string.ascii_lowercase, 5, fillvalue='!')
     ['afkpuz', 'bglqv!', 'chmrw!', 'dinsx!', 'ejoty!']
     """
-    split_text = [text[i:i+n] for i in range(0, len(text), n)]
+    split_text = chunks(text, n, fillvalue)
     return [''.join(l) for l in zip_longest(*split_text, fillvalue=fillvalue)]
 
 def combine_every_nth(split_text):
@@ -471,15 +471,18 @@ def scytale_encipher(message, rows, fillvalue=' '):
     >>> scytale_encipher('thequickbrownfox', 4)
     'tubnhirfecooqkwx'
     >>> scytale_encipher('thequickbrownfox', 5)
-    'tubnhirfecooqkwx'
+    'tubn hirf ecoo qkwx '
     >>> scytale_encipher('thequickbrownfox', 6)
     'tqcrnxhukof eibwo '
     >>> scytale_encipher('thequickbrownfox', 7)
-    'tqcrnxhukof eibwo '
+    'tqcrnx hukof  eibwo  '
     """
-    transpositions = [i for i in range(math.ceil(len(message) / rows))]
+    # transpositions = [i for i in range(math.ceil(len(message) / rows))]
+    # return column_transposition_encipher(message, transpositions, 
+    #     fillvalue=fillvalue, fillcolumnwise=False, emptycolumnwise=True)
+    transpositions = [i for i in range(rows)]
     return column_transposition_encipher(message, transpositions, 
-        fillcolumnwise=False, emptycolumnwise=True)
+        fillvalue=fillvalue, fillcolumnwise=True, emptycolumnwise=False)
 
 def scytale_decipher(message, rows):
     """Deciphers using the scytale transposition cipher.
@@ -489,16 +492,19 @@ def scytale_decipher(message, rows):
     'thequickbrownfox  '
     >>> scytale_decipher('tubnhirfecooqkwx', 4)
     'thequickbrownfox'
-    >>> scytale_decipher('tubnhirfecooqkwx', 5)
-    'thequickbrownfox'
+    >>> scytale_decipher('tubn hirf ecoo qkwx ', 5)
+    'thequickbrownfox    '
     >>> scytale_decipher('tqcrnxhukof eibwo ', 6)
     'thequickbrownfox  '
-    >>> scytale_decipher('tqcrnxhukof eibwo ', 7)
-    'thequickbrownfox  '
+    >>> scytale_decipher('tqcrnx hukof  eibwo  ', 7)
+    'thequickbrownfox     '
     """
-    transpositions = [i for i in range(math.ceil(len(message) / rows))]
+    # transpositions = [i for i in range(math.ceil(len(message) / rows))]
+    # return column_transposition_decipher(message, transpositions, 
+    #     fillcolumnwise=False, emptycolumnwise=True)
+    transpositions = [i for i in range(rows)]
     return column_transposition_decipher(message, transpositions, 
-        fillcolumnwise=False, emptycolumnwise=True)
+        fillcolumnwise=True, emptycolumnwise=False)
 
 
 if __name__ == "__main__":

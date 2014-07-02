@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Keyword ciphers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Transposition ciphers
+
+    attack the fort at dawn
+
+    a t t a c
+    k t h e f
+    o r t a t
+    d a w n
+
+    akod ttra aean cft
+
+---
+
+# Transposition ciphers
+
+Rather than changing symbols (substitution ciphers),
+
+Rearrange them.
+
+Still disguises the message.
+
+(Good ciphers do both, and more.)
+
+---
+
+# Scytale
+
+Even older than Caesar cipher.
+
+* Wrap a strip round a pole
+* Write the message along it
+* Unwind the strip
+* "Unreadable" unless reader has pole of same diameter
+
+    attack the fort at dawn
+
+    a t t a c
+    k t h e f
+    o r t a t
+    d a w n
+
+    akod ttra aean cft
+
+---
+
+# Generalising: column transposition ciphers
+
+Scytale essentially fills a grid by rows, then reads it by columns
+
+* (Deciphering is the reverse)
+
+Column transposition ciphers:
+
+* Fill a grid
+* Reorder columns based on keyword
+* Read the grid (perhaps different direction)
+
+Scytale is just a special case of column transposition.
+
+---
+
+# Grids and data structures
+
+How to represent a grid?
+
+What operations do we need to do on it?
+
+---
+
+# Grids and data structures
+
+How to represent a grid?
+
+* List of strings
+* Each row is a string
+* Rows in order in the list
+
+What operations do we need to do on it?
+
+* Fill, by rows or columns
+* Empty, by rows or columns
+* Rearrange columns
+* Calculate the size of the grid
+* Pad message to fit a rectangle of the required size
+
+---
+
+# Finding sizes
+
+Know number of columns
+
+Number of rows = ceiling(message length / columns)
+
+Paddding is (rows * columns) - message length
+
+* What to use as default padding? 
+* Keyword parameter!
+
+## Fit 'thequickbrownfox' (16 letters) into grid of 
+
+* 4 columns
+* 5 columns
+
+---
+
+# Fill and empty grid by rows
+
+Split message into row-sized chunks
+
+* slices and ranges
+
+Append all the rows together
+
+* `&lt;string&gt;.join()`
+
+Keep thinking about test cases!
+
+---
+
+# Fill and empty grid by columns
+
+Idea: fill and empty by rows, with a transposition.
+
+`zip(*rows)` and `itertools.zip_longest(*rows)`
+
+---
+
+# Swapping columns
+
+How to represent a transposition (_permutation_, to mathematicians)?
+
+How to create it from a keyword?
+
+---
+
+# Idea of a transposition
+
+Says, for each element, where it should go
+
+```
+0 1 2 3 4 5 6
+t r e a s o n
+
+a e n o r s t 
+3 2 6 5 1 4 0
+```
+
+The transposition `(3, 2, 6, 5, 1, 4, 0)` says that what was in position 3 moves to position 0, what was in position 2 moves to position 1, what was in position 6 moves to position 2, ...
+
+`enumerate(_iterable_)` yields an iterator that walks over the iterator, including the element indexes.
+
+```python
+>>> [i for i in enumerate('treason')]
+[(0, 't'), (1, 'r'), (2, 'e'), (3, 'a'), (4, 's'), (5, 'o'), (6, 'n')]
+>>> [i for i in enumerate((3, 2, 6, 5, 1, 4, 0))]
+[(0, 3), (1, 2), (2, 6), (3, 5), (4, 1), (5, 4), (6, 0)]
+```
+
+Write the `transpose` and `untranspose` functions.
+
+---
+
+# Transposition from a keyword
+
+Deduplicate the keyword
+
+Sort it
+
+Use `&lt;iterable&gt;.index()` to find the positions of the letters in the sorted keyword
+
+---
+
+# Transposition ciphers
+
+Put it all together 
+
+---
+
+# Masking the fill characters
+
+Padding characters can be distinctive.
+
+Make a function that generates a random letter, based on the `normalised_english_counts`
+
+Use `callable()` to check if the `fillvalue` should be called or just inserted
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>
