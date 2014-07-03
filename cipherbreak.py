@@ -184,6 +184,50 @@ def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
                      wrap_alphabet, fit, sanitise(plaintext)[:50]))
     return (keyword, wrap_alphabet), fit
 
+def monoalphabetic_break_hillclimbing(message, max_iterations = 10000000, 
+        fitness=Pletters):
+    ciphertext = unaccent(message).lower()
+    alphabet = list(string.ascii_lowercase)
+    random.shuffle(alphabet)
+    alphabet = ''.join(alphabet)
+    return monoalphabetic_break_hillclimbing_worker(ciphertext, alphabet,
+        max_iterations, fitness)
+
+def monoalphabetic_break_hillclimbing_mp(message, workers=10, 
+        max_iterations = 10000000, fitness=Pletters, chunksize=1):
+    worker_args = []
+    ciphertext = unaccent(message).lower()
+    for i in range(workers):
+        alphabet = list(string.ascii_lowercase)
+        random.shuffle(alphabet)
+        alphabet = ''.join(alphabet)
+        worker_args.append((ciphertext, alphabet, max_iterations, fitness))
+    with Pool() as pool:
+        breaks = pool.starmap(monoalphabetic_break_hillclimbing_worker,
+            worker_args, chunksize)
+    return max(breaks, key=lambda k: k[1])
+
+def monoalphabetic_break_hillclimbing_worker(message, alphabet, 
+        max_iterations, fitness):
+    def swap(letters, i, j):
+        if i > j:
+            i, j = j, i
+        if i == j:
+            return letters
+        else:
+            return letters[:i] + letters[j] + letters[i+1:j] + letters[i] + letters[j+1:]
+    best_alphabet = alphabet
+    best_fitness = float('-inf')
+    for i in range(max_iterations):
+        alphabet = swap(alphabet, random.randrange(26), random.randrange(26))
+        cipher_translation = ''.maketrans(string.ascii_lowercase, alphabet)
+        plaintext = message.translate(cipher_translation)
+        if fitness(plaintext) > best_fitness:
+            best_fitness = fitness(plaintext)
+            best_alphabet = alphabet
+            print(i, best_alphabet, best_fitness, plaintext)
+    return best_alphabet, best_fitness
+
 
 def column_transposition_break_mp(message, translist=transpositions, 
                      fitness=Pbigrams, chunksize=500):
@@ -228,51 +272,6 @@ def column_transposition_break_mp(message, translist=transpositions,
           helper_args, chunksize) 
         return max(breaks, key=lambda k: k[1])
 column_transposition_break = column_transposition_break_mp
-
-def monoalphabetic_break_hillclimbing(message, max_iterations = 10000000, 
-        fitness=Pletters):
-    ciphertext = unaccent(message).lower()
-    alphabet = list(string.ascii_lowercase)
-    random.shuffle(alphabet)
-    alphabet = ''.join(alphabet)
-    return monoalphabetic_break_hillclimbing_worker(ciphertext, alphabet,
-        max_iterations, fitness)
-
-def monoalphabetic_break_hillclimbing_mp(message, workers=100, 
-        max_iterations = 10000000, fitness=Pletters, chunksize=1):
-    worker_args = []
-    ciphertext = unaccent(message).lower()
-    for i in range(workers):
-        alphabet = list(string.ascii_lowercase)
-        random.shuffle(alphabet)
-        alphabet = ''.join(alphabet)
-        worker_args.append((ciphertext, alphabet, max_iterations, fitness))
-    with Pool() as pool:
-        breaks = pool.starmap(monoalphabetic_break_hillclimbing_worker,
-            worker_args, chunksize)
-    return max(breaks, key=lambda k: k[1])
-
-def monoalphabetic_break_hillclimbing_worker(message, alphabet, 
-        max_iterations, fitness):
-    def swap(letters, i, j):
-        if i > j:
-            i, j = j, i
-        if i == j:
-            return letters
-        else:
-            return letters[:i] + letters[j] + letters[i+1:j] + letters[i] + letters[j+1:]
-    best_alphabet = alphabet
-    best_fitness = float('-inf')
-    for i in range(max_iterations):
-        alphabet = swap(alphabet, random.randrange(26), random.randrange(26))
-        cipher_translation = ''.maketrans(string.ascii_lowercase, alphabet)
-        plaintext = message.translate(cipher_translation)
-        if fitness(plaintext) > best_fitness:
-            best_fitness = fitness(plaintext)
-            best_alphabet = alphabet
-            print(i, best_alphabet, best_fitness, plaintext)
-    return best_alphabet, best_fitness
-
 
 def column_transposition_break_worker(message, transposition, 
         fillcolumnwise, emptycolumnwise, fitness):
