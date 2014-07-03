@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Word segmentation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+
+  <body>
+    <textarea id="source">
+
+# Word segmentation
+
+`makingsenseofthis`
+
+`making sense of this`
+
+---
+
+# The problem
+
+Ciphertext is re-split into groups to hide word bounaries.
+
+* HELMU TSCOU SINSA REISU PPOSE KINDI NTHEI ROWNW AYBUT THERE ISLIT TLEWA RMTHI NTHEK INDNE SSIRE CEIVE 
+
+How can we rediscover the word boundaries?
+
+* helmut s cousins are i suppose kind in their own way but there is little warmth in the kindness i receive
+
+---
+
+# Simple approach
+
+1. Try all possible word boundaries
+2. Return the one that looks most like English
+
+What's the complexity of this process?
+
+* (We'll fix that in a bit...)
+
+---
+
+# What do we mean by "looks like English"?
+
+Naïve Bayes bag-of-words worked well for cipher breaking. Can we apply the same intuition here?
+
+Probability of a bag-of-words (ignoring inter-word dependencies).
+
+Finding the counts of words in text is harder than letters.
+
+* More tokens, so need more data to cover sufficient words.
+
+---
+# Data sparsity and smoothing
+
+`counts_1w.txt` is the 333,333 most common words types, with number of tokens for each, collected by Google.
+
+Doesn't cover a lot of words we want, such as proper nouns.
+
+We'll have to guess the probability of unknown word.
+
+Lots of ways to do this properly (Laplace smoothing, Good-Turing smoothing)...
+
+...but we'll ignore them all.
+
+Assume unknown words have a count of 1.
+
+---
+
+# Storing word probabilities
+
+We want something like a `defaultdict` but with our own default value
+
+Subclass a dict!
+
+Constructor (`__init__`) takes a data file, does all the adding up and taking logs
+
+`__missing__` handles the case when the key is missing
+
+
+```python
+class Pdist(dict):
+    def __init__(self, data=[]):
+        for key, count in data2:
+            ...
+        self.total = ...
+    def __missing__(self, key):
+        return ...
+
+Pw = Pdist(data...)
+
+def Pwords(words):
+    return ...
+```
+
+---
+
+# Testing the bag of words model
+
+
+```python
+>>> 'hello' in Pw.keys()       >>> Pwords(['hello'])
+True                           -4.25147684171819
+>>> 'inigo' in Pw.keys()       >>> Pwords(['hello', 'my'])
+True                           -6.995724679281423
+>>> 'blj' in Pw.keys()         >>> Pwords(['hello', 'my', 'name'])
+False                          -10.098177451501074
+>>> Pw['hello']                >>> Pwords(['hello', 'my', 'name', 'is'])
+-4.25147684171819              -12.195018236240843
+>>> Pw['my']                   >>> Pwords(['hello', 'my', 'name', 'is', 'inigo'])
+-2.7442478375632335            -18.927603013570945
+>>> Pw['name']                 >>> Pwords(['hello', 'my', 'name', 'is', 'blj'])
+-3.102452772219651             -23.964487301167402
+>>> Pw['is']                   
+-2.096840784739768             
+>>> Pw['blj']                  
+-11.76946906492656
+```
+
+---
+
+# Splitting the input
+
+```
+To segment a string:
+    find all possible splits into a first portion and remainder
+    for each split:
+        segment the remainder
+    return the split with highest score
+```
+
+Indexing pulls out letters. `'sometext'[0]` = 's' ; `'keyword'[3]` = 'e' ; `'keyword'[-1]` = 't'
+
+Slices pulls out substrings. `'keyword'[1:4]` = 'ome' ; `'keyword'[:3]` = 'som' ; `'keyword'[5:]` = 'ext'
+
+`range()` will sweep across the string
+
+## Test case
+
+```python
+>>> splits('sometext')
+[('s', 'ometext'), ('so', 'metext'), ('som', 'etext'), ('some', 'text'), 
+ ('somet', 'ext'), ('somete', 'xt'), ('sometex', 't'), ('sometext', '')]
+```
+
+The last one is important
+
+* What if this is the last word of the text?
+
+---
+
+# Effeciency and memoisation
+
+* helmut s cousins are i suppose kind in their own way but there is little warmth in the kindness i receive
+
+At any stage, can consider the sentence as prefix, word, suffix
+
+* `littlewarmthin | the | kindness i receive`
+* `littlewarmthi | nthe | kindness i receive`
+* `littlewarmth | inthe | kindness i receive`
+* `littlewarmt | hinthe | kindness i receive`
+
+P(sentence) = P(prefix) × P(word) × P(suffix)
+
+* We're assuming independence of sections.
+* For a given word/suffix split, there is only one best segmentation of the suffix.
+* Best segmentation of sentence (with split here) must have the best segmentation of the suffix.
+* Once we've found it, no need to recalculate it.
+
+## What's the complexity now?
+
+---
+
+# Memoisation
+
+* Maintain a table of previously-found results
+* Every time we're asked to calculate a segmentation, look in the table.
+* If it's in the table, just return that.
+* If not, calculate it and store the result in the table.
+
+Wrap the segment function in something that maintains that table.
+
+In the standard library: `lru_cache` as a function decorator.
+
+```python
+from functools import lru_cache
+
+@lru_cache()
+def segment(text):
+    ...
+```
+* (Plenty of tutorials online on function decorators.)
+
+---
+
+# Implmentation detail
+
+You'll hit Python's recursion level limit.
+
+Easy to reset:
+
+```python
+import sys
+sys.setrecursionlimit(1000000)
+```
+
+---
+
+# Testing segmentation
+
+```python
+>>> segment('hello')
+['hello']
+>>> segment('hellomy')
+['hello', 'my']
+>>> segment('hellomyname')
+['hello', 'my', 'name']
+>>> segment('hellomynameis')
+['hellomynameis']
+```
+
+Oh.
+
+Why?
+
+---
+
+# A broken language model
+
+```python
+>>> Pwords(['hello'])
+-4.25147684171819
+>>> Pwords(['hello', 'my'])
+-6.995724679281423
+>>> Pwords(['hello', 'my', 'name'])
+-10.098177451501074
+>>> Pwords(['hello', 'my', 'name', 'is'])
+-12.195018236240843
+
+>>> Pw['is']                   
+-2.096840784739768             
+>>> Pw['blj']                  
+-11.76946906492656
+```
+
+Need a better estimate for probability of unknown words.
+
+Needs to take account of length of word.
+
+* Longer words are less probable.
+
+## To IPython for investigation!
+
+---
+
+# Making Pdist more flexible
+
+Want to give a sensible default for unknown elements
+
+* But this will vary by referent
+* Different languages, *n*-grams, etc. 
+
+Make it a parameter!
+
+---
+
+# Hint
+
+```python
+class Pdist(dict):
+    def __init__(self, data=[], estimate_of_missing=None):
+        for key, count in data2:
+            ...
+        self.total = ...
+    def __missing__(self, key):
+        if estimate_of_missing:
+            return estimate_of_missing(key, self.total)
+        else:
+            return ...
+
+def log_probability_of_unknown_word(key, N):
+    return -log10(N * 10**((len(key) - 2) * 1.4))
+
+Pw = Pdist(datafile('count_1w.txt'), log_probability_of_unknown_word)            
+```
+
+---
+
+# Testing segmentation again
+
+```python
+>>> segment('hello')
+['hello']
+>>> segment('hellomy')
+['hello', 'my']
+>>> segment('hellomyname')
+['hello', 'my', 'name']
+>>> segment('hellomynameis')
+['hello', 'my', 'name', 'is']
+>>> ' '.join(segment(sanitise('HELMU TSCOU SINSA REISU PPOSE KINDI NTHEI ROWNW '
+                              'AYBUT THERE ISLIT TLEWA RMTHI NTHEK INDNE SSIRE CEIVE ')))
+'helmut s cousins are i suppose kind in their own way but there is 
+ little warmth in the kindness i receive'
+```
+
+Try it out on the full decrypt of `2013/2b.ciphertext` (it's a Caesar cipher)
+
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

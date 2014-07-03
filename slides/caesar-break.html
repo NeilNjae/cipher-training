@@ -111,11 +111,34 @@ e | 756288
 . | .
 z | 3575
 
-One way of thinking about this is a 26-dimensional vector. 
+Use this to predict the probability of each letter, and hence the probability of a sequence of letters. 
 
-Create a vector of our text, and one of idealised English. 
+---
 
-The distance between the vectors is how far from English the text is.
+# An infinite number of monkeys
+
+What is the probability that this string of letters is a sample of English?
+
+## Naive Bayes, or the bag of letters
+
+Ignore letter order, just treat each letter individually.
+
+Probability of a text is `\( \prod_i p_i \)`
+
+Letter      | h       | e       | l       | l       | o       | hello
+------------|---------|---------|---------|---------|---------|-------
+Probability | 0.06645 | 0.12099 | 0.04134 | 0.04134 | 0.08052 | 1.10648239 × 10<sup>-6</sup>
+
+Letter      | i       | f       | m       | m       | p       | ifmmp
+------------|---------|---------|---------|---------|---------|-------
+Probability | 0.06723 | 0.02159 | 0.02748 | 0.02748 | 0.01607 | 1.76244520 × 10<sup>-8</sup>
+
+(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
+
+Letter      | h       | e       | l       | l       | o       | hello
+------------|---------|---------|---------|---------|---------|-------
+Probability | -1.1774 | -0.9172 | -1.3836 | -1.3836 | -1.0940 | -5.956055
+
 
 ---
 
@@ -126,12 +149,14 @@ But before then how do we count the letters?
 * Read a file into a string
 ```python
 open()
-read()
+.read()
 ```
 * Count them
 ```python
 import collections
 ```
+
+Create the `language_models.py` file for this.
 
 ---
 
@@ -146,19 +171,20 @@ Counting letters in _War and Peace_ gives all manner of junk.
 ```
 ---
 
-
 # Accents
 
 ```python
->>> caesar_encipher_letter('é', 1)
+>>> 'é' in string.ascii_letters
+>>> 'e' in string.ascii_letters
 ```
-What does it produce?
-
-What should it produce?
 
 ## Unicode, combining codepoints, and normal forms
 
 Text encodings will bite you when you least expect it.
+
+- **é** : LATIN SMALL LETTER E WITH ACUTE (U+00E9)
+
+- **e** + **&nbsp;&#x301;** : LATIN SMALL LETTER E (U+0065) + COMBINING ACUTE ACCENT (U+0301)
 
 * urlencoding is the other pain point.
 
@@ -190,101 +216,78 @@ def unaccent(text):
 
 ---
 
-# Vector distances
+# Find the frequencies of letters in English
 
-.float-right[![right-aligned Vector subtraction](vector-subtraction.svg)]
-
-Several different distance measures (__metrics__, also called __norms__):
-
-* L<sub>2</sub> norm (Euclidean distance): 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt{\sum_i (\mathbf{a}_i - \mathbf{b}_i)^2} \)`
-
-* L<sub>1</sub> norm (Manhattan distance, taxicab distance): 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sum_i |\mathbf{a}_i - \mathbf{b}_i| \)`
-
-* L<sub>3</sub> norm: 
-`\(\|\mathbf{a} - \mathbf{b}\| = \sqrt[3]{\sum_i |\mathbf{a}_i - \mathbf{b}_i|^3} \)`
-
-The higher the power used, the more weight is given to the largest differences in components.
-
-(Extends out to:
-
-* L<sub>0</sub> norm (Hamming distance): 
-`$$\|\mathbf{a} - \mathbf{b}\| = \sum_i \left\{
-\begin{matrix} 1 &amp;\mbox{if}\ \mathbf{a}_i \neq \mathbf{b}_i , \\
- 0 &amp;\mbox{if}\ \mathbf{a}_i = \mathbf{b}_i \end{matrix} \right. $$`
-
-* L<sub>&infin;</sub> norm: 
-`\(\|\mathbf{a} - \mathbf{b}\| = \max_i{(\mathbf{a}_i - \mathbf{b}_i)} \)`
-
-neither of which will be that useful.)
----
-
-# Normalisation of vectors
-
-Frequency distributions drawn from different sources will have different lengths. For a fair comparison we need to scale them. 
-
-* Eucliean scaling (vector with unit length): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \sqrt{\mathbf{x}_1^2 + \mathbf{x}_2^2 + \mathbf{x}_3^2 + \dots } }$$`
-
-* Normalisation (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
+1. Read from `shakespeare.txt`, `sherlock-holmes.txt`, and `war-and-peace.txt`.
+2. Find the frequencies (`.update()`)
+3. Sort by count 
+4. Write counts to `count_1l.txt` (`'text{}\n'.format()`)
 
 ---
 
-# Angle, not distance
+# Reading letter probabilities
 
-Rather than looking at the distance between the vectors, look at the angle between them.
+1. Load the file `count_1l.txt` into a dict, with letters as keys.
 
-.float-right[![right-aligned Vector dot product](vector-dot-product.svg)]
+2. Normalise the counts (components of vector sum to 1): `$$ \hat{\mathbf{x}} = \frac{\mathbf{x}}{\| \mathbf{x} \|} = \frac{\mathbf{x}}{ \mathbf{x}_1 + \mathbf{x}_2 + \mathbf{x}_3 + \dots }$$`
+    * Return a new dict
+    * Remember the doctest!
 
-Vector dot product shows how much of one vector lies in the direction of another: 
-`\( \mathbf{A} \bullet \mathbf{B} = 
-\| \mathbf{A} \| \cdot \| \mathbf{B} \| \cos{\theta} \)`
+3. Create a dict `Pl` that gives the log probability of a letter
 
-But, 
-`\( \mathbf{A} \bullet \mathbf{B} = \sum_i \mathbf{A}_i \cdot \mathbf{B}_i \)`
-and `\( \| \mathbf{A} \| = \sum_i \mathbf{A}_i^2 \)`
-
-A bit of rearranging give the cosine simiarity:
-`$$ \cos{\theta} = \frac{ \mathbf{A} \bullet \mathbf{B} }{ \| \mathbf{A} \| \cdot \| \mathbf{B} \| } = 
-\frac{\sum_i \mathbf{A}_i \cdot \mathbf{B}_i}{\sum_i \mathbf{A}_i^2 \times \sum_i \mathbf{B}_i^2} $$`
-
-This is independent of vector lengths!
-
-Cosine similarity is 1 if in parallel, 0 if perpendicular, -1 if antiparallel.
+4. Create a function `Pletters` that gives the probability of an iterable of letters
+    * What preconditions should this function have?
+    * Remember the doctest!
 
 ---
 
-# An infinite number of monkeys
+# Breaking caesar ciphers
 
-What is the probability that this string of letters is a sample of English?
+## Remember the basic idea
 
-Given 'th', 'e' is about six times more likely than 'a' or 'i'.
+```
+for each key:
+    decipher with this key
+    how close is it to English?
+    remember the best key
+```
 
-## Naive Bayes, or the bag of letters
-
-Ignore letter order, just treat each letter individually.
-
-Probability of a text is `\( \prod_i p_i \)`
-
-(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
+Try it on the text in `2013/1a.ciphertext`. Does it work?
 
 ---
 
-# Which is best?
+# Aside: Logging
 
-   | Euclidean | Normalised
----|-----------|------------  
-L1 |     x     |      x
-L2 |     x     |      x
-L3 |     x     |      x
-Cosine |     x     |      x
+Better than scattering `print()`statements through your code
 
-And the probability measure!
+```python
+import logging
 
-* Nine different ways of measuring fitness.
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler('cipher.log'))
+logger.setLevel(logging.WARNING)
 
-## Computing is an empircal science
+        logger.debug('Caesar break attempt using key {0} gives fit of {1} '
+                      'and decrypt starting: {2}'.format(shift, fit, plaintext[:50]))
 
+```
+* Yes, it's ugly.
+
+Use `logger.setLevel()` to change the level: CRITICAL, ERROR, WARNING, INFO, DEBUG
+
+Use `logger.debug()`, `logger.info()`, etc. to log a message.
+
+---
+
+# How much ciphertext do we need?
+
+## Let's do an experiment to find out
+
+1. Load the whole corpus into a string (sanitised)
+2. Select a random chunk of plaintext and a random key
+3. Encipher the text
+4. Score 1 point if `caesar_cipher_break()` recovers the correct key
+5. Repeat many times and with many plaintext lengths
 
 
     </textarea>
