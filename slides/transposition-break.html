@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Keyword ciphers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Breaking transposition ciphers
+
+    attack the fort at dawn
+
+    a t t a c
+    k t h e f
+    o r t a t
+    d a w n
+
+    akod ttra aean cft
+
+Generally quite familiar...
+
+## Try all the keys, pick the one that looks most like Englilsh
+
+---
+
+# ...Pick one that looks most like English
+
+But the naïve Bayes score will always be the same!
+
+* Same letters, just a different order.
+
+Score by probability of substrings of letters
+
+* Bigrams, trigrams, _n_-grams
+
+---
+
+# Finding _n_-grams
+
+Given `count_2l.txt` and `count_3l.txt`, counts of bigrams and trigrams in English
+
+# Write a function that returns all the _n_-grams for a text, given _n_
+    * Assume the text is already sanitised
+
+# Build `P2l`, `P3l` (after `Pl`), `Pbigrams`, `Ptrigrams` (after `Pletters`)
+
+---
+
+# Breaking scytale
+
+What are the possible keys? 
+
+---
+
+# Try all the keys...
+
+*All* the keys?
+
+What's the transposition of 'cat'?
+
+* 'bat'?
+* 'car'?
+* 'wry'?
+* 'babe'?
+* 'powwow'?
+
+---
+
+# Equivalence classes and canonical forms
+
+Lots of words yield the same transposition
+
+* They're all in the same equivalence class
+* Only need to test one from the class
+
+General idea: if there are different ways to represent something, pick one to make comparisons easier
+
+* Canonical form, canonical representation
+
+---
+
+# Finding the transpositions to try
+
+```
+For each word:
+    if it's a new transposition:
+        add it to the list
+```
+
+What data structure to use to store the transpositions?
+
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>
+
