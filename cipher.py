@@ -507,6 +507,150 @@ def scytale_decipher(message, rows):
         fillcolumnwise=True, emptycolumnwise=False)
 
 
+class PocketEnigma(object):
+    """A pocket enigma machine
+    The wheel is internally represented as a 26-element list self.wheel_map, 
+    where wheel_map[i] == j shows that the position i places on from the arrow 
+    maps to the position j places on.
+    """
+    def __init__(self, wheel=1, position='a'):
+        """initialise the pocket enigma, including which wheel to use and the
+        starting position of the wheel.
+
+        The wheel is either 1 or 2 (the predefined wheels) or a list of letter
+        pairs.
+
+        The position is the letter pointed to by the arrow on the wheel.
+
+        >>> pe.wheel_map
+        [25, 4, 23, 10, 1, 7, 9, 5, 12, 6, 3, 17, 8, 14, 13, 21, 19, 11, 20, 16, 18, 15, 24, 2, 22, 0]
+        >>> pe.position
+        0
+        """
+        self.wheel1 = [('a', 'z'), ('b', 'e'), ('c', 'x'), ('d', 'k'), 
+            ('f', 'h'), ('g', 'j'), ('i', 'm'), ('l', 'r'), ('n', 'o'), 
+            ('p', 'v'), ('q', 't'), ('s', 'u'), ('w', 'y')]
+        self.wheel2 = [('a', 'c'), ('b', 'd'), ('e', 'w'), ('f', 'i'), 
+            ('g', 'p'), ('h', 'm'), ('j', 'k'), ('l', 'n'), ('o', 'q'), 
+            ('r', 'z'), ('s', 'u'), ('t', 'v'), ('x', 'y')]
+        if wheel == 1:
+            self.make_wheel_map(self.wheel1)
+        elif wheel == 2:
+            self.make_wheel_map(self.wheel2)
+        else:
+            self.validate_wheel_spec(wheel)
+            self.make_wheel_map(wheel)
+        self.position = ord(position) - ord('a')
+
+    def make_wheel_map(self, wheel_spec):
+        """Expands a wheel specification from a list of letter-letter pairs
+        into a full wheel_map.
+
+        >>> pe.make_wheel_map(pe.wheel2)
+        [2, 3, 0, 1, 22, 8, 15, 12, 5, 10, 9, 13, 7, 11, 16, 6, 14, 25, 20, 21, 18, 19, 4, 24, 23, 17]
+        """
+        self.validate_wheel_spec(wheel_spec)
+        self.wheel_map = [0] * 26
+        for p in wheel_spec:
+            self.wheel_map[ord(p[0]) - ord('a')] = ord(p[1]) - ord('a')
+            self.wheel_map[ord(p[1]) - ord('a')] = ord(p[0]) - ord('a')
+        return self.wheel_map
+
+    def validate_wheel_spec(self, wheel_spec):
+        """Validates that a wheel specificaiton will turn into a valid wheel
+        map.
+
+        >>> pe.validate_wheel_spec([])
+        Traceback (most recent call last):
+            ...
+        ValueError: Wheel specification has 0 pairs, require 13
+        >>> pe.validate_wheel_spec([('a', 'b', 'c')]*13)
+        Traceback (most recent call last):
+            ...
+        ValueError: Not all mappings in wheel specificationhave two elements
+        >>> pe.validate_wheel_spec([('a', 'b')]*13)
+        Traceback (most recent call last):
+            ...
+        ValueError: Wheel specification does not contain 26 letters
+        """
+        if len(wheel_spec) != 13:
+            raise ValueError("Wheel specification has {} pairs, require 13".
+                format(len(wheel_spec)))
+        for p in wheel_spec:
+            if len(p) != 2:
+                raise ValueError("Not all mappings in wheel specification"
+                    "have two elements")
+        if len(set([p[0] for p in wheel_spec] + 
+                    [p[1] for p in wheel_spec])) != 26:
+            raise ValueError("Wheel specification does not contain 26 letters")
+
+    def encipher(self, letter):
+        """Enciphers a single letter, by advancing the wheel before looking up
+        the letter on the wheel.
+
+        >>> pe.set_position('f')
+        5
+        >>> pe.encipher('k')
+        'h'
+        """
+        self.advance()
+        return self.lookup(letter)
+    decipher = encipher
+
+    def lookup(self, letter):
+        """Look up what a letter enciphers to, without turning the wheel.
+
+        >>> pe.set_position('f')
+        5
+        >>> ''.join([pe.lookup(l) for l in string.ascii_lowercase])
+        'udhbfejcpgmokrliwntsayqzvx'
+        """
+        return chr((self.wheel_map[(ord(letter) - ord('a') - self.position) % 26] + self.position) % 26 + ord('a'))
+
+    def advance(self):
+        """Advances the wheel one position.
+
+        >>> pe.set_position('f')
+        5
+        >>> pe.advance()
+        6
+        """
+        self.position = (self.position + 1) % 26
+        return self.position
+
+    def encipher_message(self, message):
+        """Enciphers a whole message.
+
+        >>> pe.set_position('f')
+        5
+        >>> pe.encipher_message('helloworld')
+        'kjsglcjoqc'
+        >>> pe.set_position('f')
+        5
+        >>> pe.encipher_message('kjsglcjoqc')
+        'helloworld'
+        """
+        transformed = ''
+        for l in message:
+            transformed += self.encipher(l)
+        return transformed
+    decipher_message = encipher_message
+
+    def set_position(self, position):
+        """Sets the position of the wheel, by specifying the letter the arrow
+        points to.
+
+        >>> pe.set_position('a')
+        0
+        >>> pe.set_position('m')
+        12
+        >>> pe.set_position('z')
+        25
+        """
+        self.position = ord(position) - ord('a')
+        return self.position
+
+
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(extraglobs={'pe': PocketEnigma(1, 'a')})
