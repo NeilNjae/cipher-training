@@ -2,6 +2,7 @@ import string
 import collections
 import norms
 import logging
+import random
 from itertools import zip_longest, cycle, permutations, starmap
 from segment import segment
 from multiprocessing import Pool
@@ -183,6 +184,50 @@ def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
                      wrap_alphabet, fit, sanitise(plaintext)[:50]))
     return (keyword, wrap_alphabet), fit
 
+def monoalphabetic_break_hillclimbing(message, max_iterations = 10000000, 
+        fitness=Pletters):
+    ciphertext = unaccent(message).lower()
+    alphabet = list(string.ascii_lowercase)
+    random.shuffle(alphabet)
+    alphabet = ''.join(alphabet)
+    return monoalphabetic_break_hillclimbing_worker(ciphertext, alphabet,
+        max_iterations, fitness)
+
+def monoalphabetic_break_hillclimbing_mp(message, workers=10, 
+        max_iterations = 10000000, fitness=Pletters, chunksize=1):
+    worker_args = []
+    ciphertext = unaccent(message).lower()
+    for i in range(workers):
+        alphabet = list(string.ascii_lowercase)
+        random.shuffle(alphabet)
+        alphabet = ''.join(alphabet)
+        worker_args.append((ciphertext, alphabet, max_iterations, fitness))
+    with Pool() as pool:
+        breaks = pool.starmap(monoalphabetic_break_hillclimbing_worker,
+            worker_args, chunksize)
+    return max(breaks, key=lambda k: k[1])
+
+def monoalphabetic_break_hillclimbing_worker(message, alphabet, 
+        max_iterations, fitness):
+    def swap(letters, i, j):
+        if i > j:
+            i, j = j, i
+        if i == j:
+            return letters
+        else:
+            return letters[:i] + letters[j] + letters[i+1:j] + letters[i] + letters[j+1:]
+    best_alphabet = alphabet
+    best_fitness = float('-inf')
+    for i in range(max_iterations):
+        alphabet = swap(alphabet, random.randrange(26), random.randrange(26))
+        cipher_translation = ''.maketrans(string.ascii_lowercase, alphabet)
+        plaintext = message.translate(cipher_translation)
+        if fitness(plaintext) > best_fitness:
+            best_fitness = fitness(plaintext)
+            best_alphabet = alphabet
+            print(i, best_alphabet, best_fitness, plaintext)
+    return best_alphabet, best_fitness
+
 
 def column_transposition_break_mp(message, translist=transpositions, 
                      fitness=Pbigrams, chunksize=500):
@@ -354,6 +399,34 @@ def beaufort_frequency_break(message, max_key_length=20, fitness=Pletters):
     results = starmap(worker, [(sanitised_message, i, fitness) 
         for i in range(1, max_key_length+1)])
     return max(results, key=lambda k: k[1])
+
+
+def pocket_enigma_break_by_crib(message, wheel_spec, crib, crib_position):
+    """Break a pocket enigma using a crib (some plaintext that's expected to
+    be in a certain position). Returns a list of possible starting wheel
+    positions that could produce the crib.
+
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'h', 0)
+    ['a', 'f', 'q']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'he', 0)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'll', 2)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 2)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 3)
+    ['a', 'j', 'n']
+    >>> pocket_enigma_break_by_crib('aaaaa', 1, 'l', 3)
+    []
+    """
+    pe = PocketEnigma(wheel=wheel_spec)
+    possible_positions = []
+    for p in string.ascii_lowercase:
+        pe.set_position(p)
+        plaintext = pe.decipher(message)
+        if plaintext[crib_position:crib_position+len(crib)] == crib:
+            possible_positions += [p]
+    return possible_positions
 
 
 def plot_frequency_histogram(freqs, sort_key=None):
