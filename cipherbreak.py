@@ -401,6 +401,34 @@ def beaufort_frequency_break(message, max_key_length=20, fitness=Pletters):
     return max(results, key=lambda k: k[1])
 
 
+def pocket_enigma_break_by_crib(message, wheel_spec, crib, crib_position):
+    """Break a pocket enigma using a crib (some plaintext that's expected to
+    be in a certain position). Returns a list of possible starting wheel
+    positions that could produce the crib.
+
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'h', 0)
+    ['a', 'f', 'q']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'he', 0)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'll', 2)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 2)
+    ['a']
+    >>> pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 3)
+    ['a', 'j', 'n']
+    >>> pocket_enigma_break_by_crib('aaaaa', 1, 'l', 3)
+    []
+    """
+    pe = PocketEnigma(wheel=wheel_spec)
+    possible_positions = []
+    for p in string.ascii_lowercase:
+        pe.set_position(p)
+        plaintext = pe.decipher(message)
+        if plaintext[crib_position:crib_position+len(crib)] == crib:
+            possible_positions += [p]
+    return possible_positions
+
+
 def plot_frequency_histogram(freqs, sort_key=None):
     x = range(len(freqs.keys()))
     y = [freqs[l] for l in sorted(freqs.keys(), key=sort_key)]

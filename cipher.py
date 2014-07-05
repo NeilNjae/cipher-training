@@ -584,18 +584,18 @@ class PocketEnigma(object):
                     [p[1] for p in wheel_spec])) != 26:
             raise ValueError("Wheel specification does not contain 26 letters")
 
-    def encipher(self, letter):
+    def encipher_letter(self, letter):
         """Enciphers a single letter, by advancing the wheel before looking up
         the letter on the wheel.
 
         >>> pe.set_position('f')
         5
-        >>> pe.encipher('k')
+        >>> pe.encipher_letter('k')
         'h'
         """
         self.advance()
         return self.lookup(letter)
-    decipher = encipher
+    decipher_letter = encipher_letter
 
     def lookup(self, letter):
         """Look up what a letter enciphers to, without turning the wheel.
@@ -618,23 +618,23 @@ class PocketEnigma(object):
         self.position = (self.position + 1) % 26
         return self.position
 
-    def encipher_message(self, message):
+    def encipher(self, message):
         """Enciphers a whole message.
 
         >>> pe.set_position('f')
         5
-        >>> pe.encipher_message('helloworld')
+        >>> pe.encipher('helloworld')
         'kjsglcjoqc'
         >>> pe.set_position('f')
         5
-        >>> pe.encipher_message('kjsglcjoqc')
+        >>> pe.encipher('kjsglcjoqc')
         'helloworld'
         """
         transformed = ''
         for l in message:
-            transformed += self.encipher(l)
+            transformed += self.encipher_letter(l)
         return transformed
-    decipher_message = encipher_message
+    decipher = encipher
 
     def set_position(self, position):
         """Sets the position of the wheel, by specifying the letter the arrow
