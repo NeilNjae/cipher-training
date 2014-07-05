@@ -148,7 +148,7 @@ def Pbigrams(letters):
     return sum(P2l[p] for p in ngrams(letters, 2))
 
 def Ptrigrams(letters):
-    """The Naive Bayes log probability of the bigrams formed from a sequence 
+    """The Naive Bayes log probability of the trigrams formed from a sequence 
     of letters.
     """
     return sum(P3l[p] for p in ngrams(letters, 3))
