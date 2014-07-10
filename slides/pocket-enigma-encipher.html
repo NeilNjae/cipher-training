@@ -105,6 +105,24 @@ What data should it hold?
 
 ---
 
+# A note on testing
+
+Testing's easier if everything returns a meaningful value
+
+Saves having to look up different values after performing each operation
+
+`__init__` can't return a value (restriction of Python)
+
+```python
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(extraglobs={'pe': PocketEnigma(1, 'a')})
+```
+
+`pe` is now available in all tests.
+
+---
+
 # Data structures
 
 What's a convenient representation of the wheel
@@ -154,6 +172,8 @@ What tests?
 * ...each a pair...
 * ...and 26 letters mentioned overall
 
+Raise exceptions if the specification is invalid
+
 ---
 
 # Making the PocketEnigma class
@@ -201,6 +221,34 @@ Idea:
 
 (all mod 26)
 
+i.e. source → subtract position → lookup destination → add position
+
+---
+
+# Advance the wheel
+
+Trivial...
+
+# Encipher a letter
+
+Advance the wheel, then look up the letter
+
+---
+
+# Encipher a message
+
+```python
+ciphertext = ''
+for letter in plaintext:
+    ciphertext += encipher_letter(letter)
+return ciphertext
+```
+
+Have to be explicit as the order of the operations is important
+
+* Something like `map` might choose an order different from strict left-to-right
+
+## Test it against the physical object
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
