@@ -540,7 +540,10 @@ class PocketEnigma(object):
         else:
             self.validate_wheel_spec(wheel)
             self.make_wheel_map(wheel)
-        self.position = ord(position) - ord('a')
+        if position in string.ascii_lowercase:
+            self.position = ord(position) - ord('a')
+        else:
+            self.position = position
 
     def make_wheel_map(self, wheel_spec):
         """Expands a wheel specification from a list of letter-letter pairs
@@ -574,7 +577,7 @@ class PocketEnigma(object):
         ValueError: Wheel specification does not contain 26 letters
         """
         if len(wheel_spec) != 13:
-            raise ValueError("Wheel specification has {} pairs, require 13".
+            raise ValueError("Wheel specification has {} pairs, requires 13".
                 format(len(wheel_spec)))
         for p in wheel_spec:
             if len(p) != 2:
@@ -604,8 +607,16 @@ class PocketEnigma(object):
         5
         >>> ''.join([pe.lookup(l) for l in string.ascii_lowercase])
         'udhbfejcpgmokrliwntsayqzvx'
+        >>> pe.lookup('A')
+        ''
         """
-        return chr((self.wheel_map[(ord(letter) - ord('a') - self.position) % 26] + self.position) % 26 + ord('a'))
+        if letter in string.ascii_lowercase:
+            return chr(
+                (self.wheel_map[(ord(letter) - ord('a') - self.position) % 26] + 
+                    self.position) % 26 + 
+                ord('a'))
+        else:
+            return ''
 
     def advance(self):
         """Advances the wheel one position.
@@ -618,7 +629,7 @@ class PocketEnigma(object):
         self.position = (self.position + 1) % 26
         return self.position
 
-    def encipher(self, message):
+    def encipher(self, message, starting_position=None):
         """Enciphers a whole message.
 
         >>> pe.set_position('f')
@@ -629,7 +640,11 @@ class PocketEnigma(object):
         5
         >>> pe.encipher('kjsglcjoqc')
         'helloworld'
+        >>> pe.encipher('helloworld', starting_position = 'x')
+        'egrekthnnf'
         """
+        if starting_position:
+            self.set_position(starting_position)
         transformed = ''
         for l in message:
             transformed += self.encipher_letter(l)
