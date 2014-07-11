@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Breaking the pocket enigma</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Breaking the Pocket Enigma
+
+![centre-aligned Pocket Engima](pocket-enigma-small.jpg)
+
+Using cribs
+
+---
+
+# Breaking the Pocket Enigma
+
+A _crib_ is a piece of plaintext we believe to be in the enciphered message.
+
+This is the way Enigma messages were broken in WWII.
+
+There are many keys, and doing the naïve Bayes analysis was too expensive.
+
+The possible keys were filtered by finding the ones that could have produced the crib. These filtered keys could then be checked manually.
+
+At Bletchley Park, the filtering was done by the Bombes.
+
+---
+
+# Breaking by cribs
+
+```
+Given a message, a wheel spec, a crib, and the location of that crib:
+    Go through each key in turn
+    If the plaintext matches the crib:
+        Add it to the list of possible keys
+Return the possible keys
+```
+
+## Example
+```python
+pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 3)
+['a', 'j', 'n']
+```
+
+Using wheel 1, the `j` (`ciphertext[3]`) could become `l`  if the wheel starts the message on a, j, or n.
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>
