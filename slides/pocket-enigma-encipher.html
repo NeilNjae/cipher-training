@@ -105,24 +105,6 @@ What data should it hold?
 
 ---
 
-# A note on testing
-
-Testing's easier if everything returns a meaningful value
-
-Saves having to look up different values after performing each operation
-
-`__init__` can't return a value (restriction of Python)
-
-```python
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(extraglobs={'pe': PocketEnigma(1, 'a')})
-```
-
-`pe` is now available in all tests.
-
----
-
 # Data structures
 
 What's a convenient representation of the wheel
@@ -200,6 +182,24 @@ class PocketEnigma(object):
                 format(len(wheel_spec)))
         ...
 ```
+
+---
+
+# A note on testing
+
+Testing's easier if everything returns a meaningful value
+
+Saves having to look up different values after performing each operation
+
+`__init__` can't return a value (restriction of Python)
+
+```python
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(extraglobs={'pe': PocketEnigma(1, 'a')})
+```
+
+`pe` is now available in all tests.
 
 ---
 
