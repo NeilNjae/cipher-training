@@ -1,0 +1,10 @@
+"name",500,250,100,50,20
+"Pletters",2442,2425,2550,2461,2067
+"cosine_similarity + euclidean_scaled",2487,2492,2513,2455,1731
+"cosine_similarity + normalised",2503,2573,2454,2435,1680
+"l1 + euclidean_scaled",2495,2477,2506,2419,1812
+"l1 + normalised",2488,2521,2465,2466,1895
+"l2 + euclidean_scaled",2524,2467,2529,2470,1763
+"l2 + normalised",2566,2545,2481,2433,1756
+"l3 + euclidean_scaled",2444,2458,2560,2426,1582
+"l3 + normalised",2476,2524,2463,2354,1433
