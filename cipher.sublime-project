@@ -1,2 +1,13 @@
 {
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "slides"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	]
 }
