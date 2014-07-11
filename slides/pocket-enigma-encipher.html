@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pocket enigma</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      /* Slideshow styles */
+      body {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      a, a > code {
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .plaintext {
+        background: #272822;
+        color: #80ff80;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+      .ciphertext {
+        background: #272822;
+        color: #ff6666;
+        text-shadow: 0 0 20px #333;
+        padding: 2px 5px;
+      }
+       .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Pocket Enigma
+
+![centre-aligned Pocket Engima](pocket-enigma-small.jpg)
+
+Stateful cipher
+
+---
+
+# Pocket Enigma
+
+Emulates the Enigma machine from WWII
+
+Mechanical cipher machine
+
+* Substitution cipher
+* Substitution changes with every letter
+
+Ciphering method: advance the wheel, then follow the lines to encipher the letter
+
+## Stateful enciphering
+
+The cipher depends on the position of the wheel
+
+We need to encapsulate that state
+
+Objects have state
+
+---
+
+# The PocketEnigma object
+
+What do we want it to do?
+
+What data should the object hold?
+
+---
+
+# The PocketEnigma object
+
+What do we want it to do?
+
+* Initialise with the appropriate wheel (and possible starting position)
+* Spin the wheel to a given position
+* Advance the wheel one position
+* Look up a letter given the wheel position
+* Encipher a letter (advance the wheel then look up the letter)
+* Encipher a message (optionally give the key)
+* Make aliases for deciphering (same as enciphering)
+
+
+* Accept user-defined wheels
+    * ...and validate them
+
+What data should it hold?
+
+* A description of the wheel being used
+* The current position of the wheel
+
+---
+
+# Data structures
+
+What's a convenient representation of the wheel
+
+1. for the object to use internally
+2. for a person to use to describe the wheel
+
+They may not be the same, and we'll have to translate between them
+
+---
+
+# Data structures
+
+### Internal use: list of transpositions. 
+
+```python
+[2, 3, 0, 1, 22, 8, 15, 12, 5, ...
+```
+
+so position 0 ('a') swaps with position 2 ('c'), position 3 ('d') swaps with position 1 ('b'), and so on.
+
+* This will be a nightmare to enter correctly
+
+### Exernal use: list of pairs
+
+```python
+[('a', 'c'), ('b', 'd'), ...]
+```
+
+Easier to enter
+
+* Need to validate the human-entered list, to check it's valid
+
+---
+
+# Validating the wheel description
+
+What tests?
+
+---
+
+# Validating the wheel specification
+
+What tests?
+
+* 13 elements...
+* ...each a pair...
+* ...and 26 letters mentioned overall
+
+Raise exceptions if the specification is invalid
+
+---
+
+# Making the PocketEnigma class
+
+```python
+class PocketEnigma(object):
+    def __init__(self, wheel=1, position='a'):
+        self.wheel1 = [('a', 'z'), ('b', 'e'), ('c', 'x'), ('d', 'k'), 
+            ('f', 'h'), ('g', 'j'), ('i', 'm'), ('l', 'r'), ('n', 'o'), 
+            ('p', 'v'), ('q', 't'), ('s', 'u'), ('w', 'y')]
+        self.wheel2 = [('a', 'c'), ('b', 'd'), ('e', 'w'), ('f', 'i'), 
+            ('g', 'p'), ('h', 'm'), ('j', 'k'), ('l', 'n'), ('o', 'q'), 
+            ('r', 'z'), ('s', 'u'), ('t', 'v'), ('x', 'y')]
+        # Rest of initialisation code here
+
+    def make_wheel_map(self, wheel_spec):
+        ...
+        self.wheel_map = ...
+        ...
+
+    def validate_wheel_spec(self, wheel_spec):
+        if len(wheel_spec) != 13:
+            raise ValueError("Wheel specification has {} pairs, requires 13".
+                format(len(wheel_spec)))
+        ...
+```
+
+---
+
+# A note on testing
+
+Testing's easier if everything returns a meaningful value
+
+Saves having to look up different values after performing each operation
+
+`__init__` can't return a value (restriction of Python)
+
+```python
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(extraglobs={'pe': PocketEnigma(1, 'a')})
+```
+
+`pe` is now available in all tests.
+
+---
+
+# Looking up the enciphered version of a letter
+
+*Not* advancing the wheel before
+
+Keep `self.position` to record where the wheel is
+
+* `__init__` can be passed a letter, but internally it's a number
+
+But the wheel map only works if the wheel arrow is pointing at 'a'
+
+Idea: 
+
+1. Rotate the source letter back `position` spaces
+2. Do the lookup
+3. Rotate the destination letter forward `position` spaces
+
+(all mod 26)
+
+i.e. source → subtract position → lookup destination → add position
+
+---
+
+# Advance the wheel
+
+Trivial...
+
+# Encipher a letter
+
+Advance the wheel, then look up the letter
+
+---
+
+# Encipher a message
+
+```python
+ciphertext = ''
+for letter in plaintext:
+    ciphertext += encipher_letter(letter)
+return ciphertext
+```
+
+Have to be explicit as the order of the operations is important
+
+* Something like `map` might choose an order different from strict left-to-right
+
+## Test it against the physical object
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&delayStartupUntil=configured"></script>
+
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+            return(elem.SourceElement());
+        }).parent().addClass('has-jax');
+      });
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Further work</title>
+    <title>Breaking the pocket enigma</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -45,46 +45,45 @@
   <body>
     <textarea id="source">
 
-# Taking this further
+# Breaking the Pocket Enigma
 
+![centre-aligned Pocket Engima](pocket-enigma-small.jpg)
 
-<table>
-<tr valign="top">
-<td>
-### Countdown
+Using cribs
 
-* Conundrum
-* Letters
-   * Picking letters to maximise score
-* Numbers
-   * Read the "Functional Pearl"
-</td>
-<td>
-### Hangman
-* Letter probabilities based on each word occurring once in the dictionary
-* Set of candidate words filtered by length, letters guessed
-</td>
-</tr>
-<tr>
-<td rowspan=2>
-### Full Enigma and Bombe
-* Steckerboard
-* Three wheels
-    * (and all the turnover logic)
-* Wheel rings
-* Extend the Bombe
-</td>
-<td>
-### Text generation
-* Read some text, find the n-grams, generate more text from that.
-</td>
-<tr>
-<td>
-### Spelling correction
-* Suggest the most likely correct word, given the probability of these errors.
-</td>
-</tr>
-</table>
+---
+
+# Breaking the Pocket Enigma
+
+A _crib_ is a piece of plaintext we believe to be in the enciphered message.
+
+This is the way Enigma messages were broken in WWII.
+
+There are many keys, and doing the naïve Bayes analysis was too expensive.
+
+The possible keys were filtered by finding the ones that could have produced the crib. These filtered keys could then be checked manually.
+
+At Bletchley Park, the filtering was done by the Bombes.
+
+---
+
+# Breaking by cribs
+
+```
+Given a message, a wheel spec, a crib, and the location of that crib:
+    Go through each key in turn
+    If the plaintext matches the crib:
+        Add it to the list of possible keys
+Return the possible keys
+```
+
+## Example
+```python
+pocket_enigma_break_by_crib('kzpjlzmoga', 1, 'l', 3)
+['a', 'j', 'n']
+```
+
+Using wheel 1, the `j` (`ciphertext[3]`) could become `l`  if the wheel starts the message on a, j, or n.
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
@@ -111,4 +110,3 @@
     </script>
   </body>
 </html>
-

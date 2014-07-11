@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Keyword ciphers</title>
+    <title>Transposition ciphers</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       /* Slideshow styles */
@@ -79,14 +79,16 @@ Even older than Caesar cipher.
 * Unwind the strip
 * "Unreadable" unless reader has pole of same diameter
 
-    attack the fort at dawn
+```
+attack the fort at dawn
 
-    a t t a c
-    k t h e f
-    o r t a t
-    d a w n
+a t t a c
+k t h e f
+o r t a t
+d a w n
 
-    akod ttra aean cft
+akod ttra aean cft
+```
 
 ---
 
@@ -102,27 +104,36 @@ Column transposition ciphers:
 * Reorder columns based on keyword
 * Read the grid (perhaps different direction)
 
+(Keyword = secret → cerst)
+```
+attack the fort at dawn
+
+s e c r t       c e r s t
+---------       ---------
+a t t a c       t t a a c
+k t h e f       h t e k f
+o r t a t       t r a o t
+d a w n         w a n d
+
+ttaac htekf traot wand
+thtw tra aean akod cft
+```
+
 Scytale is just a special case of column transposition.
 
 ---
 
 # Grids and data structures
 
-How to represent a grid?
+What operations do we need to do on a grid?
 
-What operations do we need to do on it?
+How to represent a grid?
 
 ---
 
 # Grids and data structures
 
-How to represent a grid?
-
-* List of strings
-* Each row is a string
-* Rows in order in the list
-
-What operations do we need to do on it?
+What operations do we need to do on a grid?
 
 * Fill, by rows or columns
 * Empty, by rows or columns
@@ -130,15 +141,21 @@ What operations do we need to do on it?
 * Calculate the size of the grid
 * Pad message to fit a rectangle of the required size
 
+How to represent a grid?
+
+* List of strings
+* Each row is a string
+* Rows in order in the list
+
 ---
 
 # Finding sizes
 
 Know number of columns
 
-Number of rows = ceiling(message length / columns)
+Number of rows = `\(\left \lceil \frac{\mathrm{message\ length}}{\mathrm{columns}} \right \rceil\)`
 
-Paddding is (rows * columns) - message length
+Paddding is (rows ⨉ columns) - message length
 
 * What to use as default padding? 
 * Keyword parameter!
@@ -194,7 +211,7 @@ a e n o r s t
 
 The transposition `(3, 2, 6, 5, 1, 4, 0)` says that what was in position 3 moves to position 0, what was in position 2 moves to position 1, what was in position 6 moves to position 2, ...
 
-`enumerate(_iterable_)` yields an iterator that walks over the iterator, including the element indexes.
+`enumerate(_iterable_)` yields an iterator that walks over the iterable, including the element indexes.
 
 ```python
 >>> [i for i in enumerate('treason')]
@@ -220,6 +237,20 @@ Use `&lt;iterable&gt;.index()` to find the positions of the letters in the sorte
 # Transposition ciphers
 
 Put it all together 
+
+---
+
+# Back to the scytale
+
+Key is number of rows.
+
+No transposition of columns.
+
+* What does a null transposition look like?
+
+How to fill and empty?
+
+(Transposing the grid is easier)
 
 ---
 
