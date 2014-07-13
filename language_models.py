@@ -96,10 +96,10 @@ def ngrams(text, n):
     """Returns all n-grams of a text
     
     >>> ngrams(sanitise('the quick brown fox'), 2) # doctest: +NORMALIZE_WHITESPACE
-    ['th', 'he', 'eq', 'qu', 'ui', 'ic', 'ck', 'kb', 'br', 'ro', 'ow', 'wn', 
+    ['th', 'he', 'eq', 'qu', 'ui', 'ic', 'ck', 'kb', 'br', 'ro', 'ow', 'wn',
      'nf', 'fo', 'ox']
     >>> ngrams(sanitise('the quick brown fox'), 4) # doctest: +NORMALIZE_WHITESPACE
-    ['theq', 'hequ', 'equi', 'quic', 'uick', 'ickb', 'ckbr', 'kbro', 'brow', 
+    ['theq', 'hequ', 'equi', 'quic', 'uick', 'ickb', 'ckbr', 'kbro', 'brow',
      'rown', 'ownf', 'wnfo', 'nfox']
     """
     return [text[i:i+n] for i in range(len(text)-n+1)]
@@ -129,16 +129,15 @@ Pl = Pdist(datafile('count_1l.txt'), lambda _k, _N: 0)
 P2l = Pdist(datafile('count_2l.txt'), lambda _k, _N: 0)
 P3l = Pdist(datafile('count_3l.txt'), lambda _k, _N: 0)
 
-def Pwords(words): 
+def Pwords(words):
     """The Naive Bayes log probability of a sequence of words.
     """
     return sum(Pw[w.lower()] for w in words)
 
-def Pwords_wrong(words): 
+def Pwords_wrong(words):
     """The Naive Bayes log probability of a sequence of words.
     """
     return sum(Pw_wrong[w.lower()] for w in words)
-
 
 def Pletters(letters):
     """The Naive Bayes log probability of a sequence of letters.
@@ -146,13 +145,13 @@ def Pletters(letters):
     return sum(Pl[l.lower()] for l in letters)
 
 def Pbigrams(letters):
-    """The Naive Bayes log probability of the bigrams formed from a sequence 
+    """The Naive Bayes log probability of the bigrams formed from a sequence
     of letters.
     """
     return sum(P2l[p] for p in ngrams(letters, 2))
 
 def Ptrigrams(letters):
-    """The Naive Bayes log probability of the trigrams formed from a sequence 
+    """The Naive Bayes log probability of the trigrams formed from a sequence
     of letters.
     """
     return sum(P3l[p] for p in ngrams(letters, 3))
@@ -165,8 +164,8 @@ def cosine_similarity_score(text):
     >>> cosine_similarity_score('abcabc') # doctest: +ELLIPSIS
     0.26228882...
     """
-    return norms.cosine_similarity(english_counts, 
-        collections.Counter(sanitise(text)))
+    return norms.cosine_similarity(english_counts,
+                                   collections.Counter(sanitise(text)))
 
 
 if __name__ == "__main__":
