@@ -44,7 +44,7 @@ def combine_every_nth(split_text):
     'abcdefghijklmnopqrstuvwxyz'
     """
     return ''.join([''.join(l)
-        for l in zip_longest(*split_text, fillvalue='')])
+                    for l in zip_longest(*split_text, fillvalue='')])
 
 def chunks(text, n, fillvalue=None):
     """Split a text into chunks of n characters
@@ -79,7 +79,7 @@ def transpose(items, transposition):
 
 def untranspose(items, transposition):
     """Undoes a transpose
-    
+
     >>> untranspose(['a', 'b', 'c', 'd'], [0,1,2,3])
     ['a', 'b', 'c', 'd']
     >>> untranspose(['d', 'b', 'c', 'a'], [3,1,2,0])
@@ -183,7 +183,7 @@ def caesar_decipher(message, shift):
     return caesar_encipher(message, -shift)
 
 def affine_encipher_letter(accented_letter, multiplier=1, adder=0,
-        one_based=True):
+                           one_based=True):
     """Encipher a letter, given a multiplier and adder
     >>> ''.join([affine_encipher_letter(l, 3, 5, True) \
             for l in string.ascii_uppercase])
@@ -225,7 +225,8 @@ def affine_decipher_letter(letter, multiplier=1, adder=0, one_based=True):
         if one_based: cipher_number += 1
         plaintext_number = (
             modular_division_table[multiplier]
-                                  [(cipher_number - adder) % 26] )
+                                  [(cipher_number - adder) % 26]
+                            )
         if one_based: plaintext_number -= 1
         return chr(plaintext_number % 26 + alphabet_start)
     else:
@@ -254,7 +255,7 @@ def affine_decipher(message, multiplier=1, adder=0, one_based=True):
     return ''.join(enciphered)
 
 
-class Keyword_wrap_alphabet(Enum):
+class KeywordWrapAlphabet(Enum):
     """Ways of wrapping the alphabet for keyword-based substitution ciphers."""
     from_a = 1
     from_last = 2
@@ -262,25 +263,25 @@ class Keyword_wrap_alphabet(Enum):
 
 
 def keyword_cipher_alphabet_of(keyword,
-        wrap_alphabet=Keyword_wrap_alphabet.from_a):
+        wrap_alphabet=KeywordWrapAlphabet.from_a):
     """Find the cipher alphabet given a keyword.
     wrap_alphabet controls how the rest of the alphabet is added
     after the keyword.
 
     >>> keyword_cipher_alphabet_of('bayes')
     'bayescdfghijklmnopqrtuvwxz'
-    >>> keyword_cipher_alphabet_of('bayes', Keyword_wrap_alphabet.from_a)
+    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_a)
     'bayescdfghijklmnopqrtuvwxz'
-    >>> keyword_cipher_alphabet_of('bayes', Keyword_wrap_alphabet.from_last)
+    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_last)
     'bayestuvwxzcdfghijklmnopqr'
-    >>> keyword_cipher_alphabet_of('bayes', Keyword_wrap_alphabet.from_largest)
+    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_largest)
     'bayeszcdfghijklmnopqrtuvwx'
     """
-    if wrap_alphabet == Keyword_wrap_alphabet.from_a:
+    if wrap_alphabet == KeywordWrapAlphabet.from_a:
         cipher_alphabet = ''.join(deduplicate(sanitise(keyword) +
                                               string.ascii_lowercase))
     else:
-        if wrap_alphabet == Keyword_wrap_alphabet.from_last:
+        if wrap_alphabet == KeywordWrapAlphabet.from_last:
             last_keyword_letter = deduplicate(sanitise(keyword))[-1]
         else:
             last_keyword_letter = sorted(sanitise(keyword))[-1]
@@ -294,7 +295,7 @@ def keyword_cipher_alphabet_of(keyword,
 
 
 def keyword_encipher(message, keyword,
-        wrap_alphabet=Keyword_wrap_alphabet.from_a):
+                     wrap_alphabet=KeywordWrapAlphabet.from_a):
     """Enciphers a message with a keyword substitution cipher.
     wrap_alphabet controls how the rest of the alphabet is added
     after the keyword.
@@ -304,18 +305,19 @@ def keyword_encipher(message, keyword,
 
     >>> keyword_encipher('test message', 'bayes')
     'rsqr ksqqbds'
-    >>> keyword_encipher('test message', 'bayes', Keyword_wrap_alphabet.from_a)
+    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_a)
     'rsqr ksqqbds'
-    >>> keyword_encipher('test message', 'bayes', Keyword_wrap_alphabet.from_last)
+    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_last)
     'lskl dskkbus'
-    >>> keyword_encipher('test message', 'bayes', Keyword_wrap_alphabet.from_largest)
+    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_largest)
     'qspq jsppbcs'
     """
     cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
     cipher_translation = ''.maketrans(string.ascii_lowercase, cipher_alphabet)
     return unaccent(message).lower().translate(cipher_translation)
 
-def keyword_decipher(message, keyword, wrap_alphabet=Keyword_wrap_alphabet.from_a):
+def keyword_decipher(message, keyword, 
+                     wrap_alphabet=KeywordWrapAlphabet.from_a):
     """Deciphers a message with a keyword substitution cipher.
     wrap_alphabet controls how the rest of the alphabet is added
     after the keyword.
@@ -325,11 +327,11 @@ def keyword_decipher(message, keyword, wrap_alphabet=Keyword_wrap_alphabet.from_
 
     >>> keyword_decipher('rsqr ksqqbds', 'bayes')
     'test message'
-    >>> keyword_decipher('rsqr ksqqbds', 'bayes', Keyword_wrap_alphabet.from_a)
+    >>> keyword_decipher('rsqr ksqqbds', 'bayes', KeywordWrapAlphabet.from_a)
     'test message'
-    >>> keyword_decipher('lskl dskkbus', 'bayes', Keyword_wrap_alphabet.from_last)
+    >>> keyword_decipher('lskl dskkbus', 'bayes', KeywordWrapAlphabet.from_last)
     'test message'
-    >>> keyword_decipher('qspq jsppbcs', 'bayes', Keyword_wrap_alphabet.from_largest)
+    >>> keyword_decipher('qspq jsppbcs', 'bayes', KeywordWrapAlphabet.from_largest)
     'test message'
     """
     cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
@@ -357,14 +359,14 @@ def vigenere_decipher(message, keyword):
     pairs = zip(message, cycle(shifts))
     return ''.join([caesar_decipher_letter(l, k) for l, k in pairs])
 
-beaufort_encipher=vigenere_decipher
-beaufort_decipher=vigenere_encipher
+beaufort_encipher = vigenere_decipher
+beaufort_decipher = vigenere_encipher
 
 
 def transpositions_of(keyword):
     """Finds the transpostions given by a keyword. For instance, the keyword
     'clever' rearranges to 'celrv', so the first column (0) stays first, the
-    second column (1) moves to third, the third column (2) moves to second, 
+    second column (1) moves to third, the third column (2) moves to second,
     and so on.
 
     If passed a tuple, assume it's already a transposition and just return it.
@@ -408,8 +410,8 @@ def pad(message_len, group_len, fillvalue):
     return padding
 
 def column_transposition_encipher(message, keyword, fillvalue=' ',
-      fillcolumnwise=False,
-      emptycolumnwise=False):
+                                  fillcolumnwise=False,
+                                  emptycolumnwise=False):
     """Enciphers using the column transposition cipher.
     Message is padded to allow all rows to be the same length.
 
@@ -457,8 +459,8 @@ def column_transposition_encipher(message, keyword, fillvalue=' ',
         return ''.join(chain(*transposed))
 
 def column_transposition_decipher(message, keyword, fillvalue=' ',
-      fillcolumnwise=False,
-      emptycolumnwise=False):
+                                  fillcolumnwise=False,
+                                  emptycolumnwise=False):
     """Deciphers using the column transposition cipher.
     Message is padded to allow all rows to be the same length.
 
@@ -508,12 +510,12 @@ def scytale_encipher(message, rows, fillvalue=' '):
     """
     transpositions = [i for i in range(rows)]
     return column_transposition_encipher(message, transpositions,
-        fillvalue=fillvalue, fillcolumnwise=True, emptycolumnwise=False)
+            fillvalue=fillvalue, fillcolumnwise=True, emptycolumnwise=False)
 
 def scytale_decipher(message, rows):
     """Deciphers using the scytale transposition cipher.
     Assumes the message is padded so that all rows are the same length.
-    
+
     >>> scytale_decipher('tcnhkfeboqrxuo iw ', 3)
     'thequickbrownfox  '
     >>> scytale_decipher('tubnhirfecooqkwx', 4)
@@ -600,14 +602,14 @@ class PocketEnigma(object):
         ValueError: Wheel specification does not contain 26 letters
         """
         if len(wheel_spec) != 13:
-            raise ValueError("Wheel specification has {} pairs, requires 13".
-                format(len(wheel_spec)))
+            raise ValueError("Wheel specification has {} pairs, requires"
+                             " 13".format(len(wheel_spec)))
         for p in wheel_spec:
             if len(p) != 2:
                 raise ValueError("Not all mappings in wheel specification"
-                    "have two elements")
-        if len(set([p[0] for p in wheel_spec] + 
-                    [p[1] for p in wheel_spec])) != 26:
+                                 "have two elements")
+        if len(set([p[0] for p in wheel_spec] +
+                   [p[1] for p in wheel_spec])) != 26:
             raise ValueError("Wheel specification does not contain 26 letters")
 
     def encipher_letter(self, letter):

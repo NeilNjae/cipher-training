@@ -1,9 +1,10 @@
+"""Define a variety of norms for finding distances between vectors"""
+
 import collections
-from math import log10
 
 def normalise(frequencies):
     """Scale a set of frequencies so they sum to one
-    
+
     >>> sorted(normalise({1: 1, 2: 0}).items())
     [(1, 1.0), (2, 0.0)]
     >>> sorted(normalise({1: 1, 2: 1}).items())
@@ -14,12 +15,12 @@ def normalise(frequencies):
     [(1, 0.25), (2, 0.5), (3, 0.25)]
     """
     length = sum([f for f in frequencies.values()])
-    return collections.defaultdict(int, ((k, v / length) 
+    return collections.defaultdict(int, ((k, v / length)
         for (k, v) in frequencies.items()))
 
 def euclidean_scale(frequencies):
     """Scale a set of frequencies so they have a unit euclidean length
-    
+
     >>> sorted(euclidean_scale({1: 1, 2: 0}).items())
     [(1, 1.0), (2, 0.0)]
     >>> sorted(euclidean_scale({1: 1, 2: 1}).items()) # doctest: +ELLIPSIS
@@ -30,17 +31,21 @@ def euclidean_scale(frequencies):
     [(1, 0.408248...), (2, 0.81649658...), (3, 0.408248...)]
     """
     length = sum([f ** 2 for f in frequencies.values()]) ** 0.5
-    return collections.defaultdict(int, ((k, v / length) 
+    return collections.defaultdict(int, ((k, v / length)
         for (k, v) in frequencies.items()))
 
 def identity_scale(frequencies):
+    """Don't scale a set of frequencies. (For use when a function expects a
+    scaling function but you don't want to supply one.)
+    """
     return frequencies
         
 
 def l2(frequencies1, frequencies2):
-    """Finds the distances between two frequency profiles, expressed as dictionaries.
+    """Finds the distances between two frequency profiles, expressed as
+    dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
-    
+
     >>> l2({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1})
     0.0
     >>> l2({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
@@ -62,7 +67,7 @@ def l2(frequencies1, frequencies2):
 euclidean_distance = l2
 
 def l1(frequencies1, frequencies2):
-    """Finds the distances between two frequency profiles, expressed as 
+    """Finds the distances between two frequency profiles, expressed as
     dictionaries. Assumes every key in frequencies1 is also in frequencies2
 
     >>> l1({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1})
@@ -82,7 +87,7 @@ def l1(frequencies1, frequencies2):
     return total
 
 def l3(frequencies1, frequencies2):
-    """Finds the distances between two frequency profiles, expressed as 
+    """Finds the distances between two frequency profiles, expressed as
     dictionaries. Assumes every key in frequencies1 is also in frequencies2
 
     >>> l3({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1})
@@ -105,10 +110,10 @@ def l3(frequencies1, frequencies2):
     return total ** (1/3)
 
 def geometric_mean(frequencies1, frequencies2):
-    """Finds the geometric mean of the absolute differences between two frequency profiles, 
-    expressed as dictionaries.
+    """Finds the geometric mean of the absolute differences between two
+    frequency profiles, expressed as dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
-    
+
     >>> geometric_mean({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1})
     1
     >>> geometric_mean({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1})
@@ -131,8 +136,8 @@ def geometric_mean(frequencies1, frequencies2):
     return total
 
 def harmonic_mean(frequencies1, frequencies2):
-    """Finds the harmonic mean of the absolute differences between two frequency profiles, 
-    expressed as dictionaries.
+    """Finds the harmonic mean of the absolute differences between two
+    frequency profiles, expressed as dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
 
     >>> harmonic_mean({'a':2, 'b':2, 'c':2}, {'a':1, 'b':1, 'c':1})
@@ -160,7 +165,8 @@ def harmonic_mean(frequencies1, frequencies2):
 
 
 def cosine_similarity(frequencies1, frequencies2):
-    """Finds the distances between two frequency profiles, expressed as dictionaries.
+    """Finds the distances between two frequency profiles, expressed as 
+    dictionaries.
     Assumes every key in frequencies1 is also in frequencies2
 
     >>> cosine_similarity({'a':1, 'b':1, 'c':1}, {'a':1, 'b':1, 'c':1}) # doctest: +ELLIPSIS
