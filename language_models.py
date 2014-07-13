@@ -1,6 +1,10 @@
+"""Language-specific functions, including models of languages based on data of
+its use.
+"""
+
 import string
-import norms
 import random
+import norms
 import collections
 import unicodedata
 import itertools
@@ -16,7 +20,7 @@ def letters(text):
     return ''.join([c for c in text if c in string.ascii_letters])
 
 def unaccent(text):
-    """Remove all accents from letters. 
+    """Remove all accents from letters.
     It does this by converting the unicode string to decomposed compatability
     form, dropping all the combining accents, then re-encoding the bytes.
 
@@ -37,7 +41,7 @@ def unaccent(text):
 
 def sanitise(text):
     """Remove all non-alphabetic characters and convert the text to lowercase
-    
+
     >>> sanitise('The Quick')
     'thequick'
     >>> sanitise('The Quick BROWN fox jumped! over... the (9lazy) DOG')
@@ -72,20 +76,20 @@ with open('words.txt', 'r') as f:
 
 
 def weighted_choice(d):
-	"""Generate random item from a dictionary of item counts
-	"""
-	target = random.uniform(0, sum(d.values()))
-	cuml = 0.0
-	for (l, p) in d.items():
-		cuml += p
-		if cuml > target:
-			return l
-	return None
+    """Generate random item from a dictionary of item counts
+    """
+    target = random.uniform(0, sum(d.values()))
+    cuml = 0.0
+    for (l, p) in d.items():
+        cuml += p
+        if cuml > target:
+            return l
+    return None
 
 def random_english_letter():
-	"""Generate a random letter based on English letter counts
-	"""
-	return weighted_choice(normalised_english_counts)
+    """Generate a random letter based on English letter counts
+    """
+    return weighted_choice(normalised_english_counts)
 
 
 def ngrams(text, n):

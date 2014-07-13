@@ -37,22 +37,22 @@ def frequencies(text):
     [('a', 2), ('b', 2), ('c', 2), ('d', 1), ('e', 1), ('f', 1)]
     >>> sorted(frequencies('the quick brown fox jumped over the lazy ' \
          'dog').items()) # doctest: +NORMALIZE_WHITESPACE
-    [(' ', 8), ('a', 1), ('b', 1), ('c', 1), ('d', 2), ('e', 4), ('f', 1), 
-     ('g', 1), ('h', 2), ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1), 
-     ('n', 1), ('o', 4), ('p', 1), ('q', 1), ('r', 2), ('t', 2), ('u', 2), 
+    [(' ', 8), ('a', 1), ('b', 1), ('c', 1), ('d', 2), ('e', 4), ('f', 1),
+     ('g', 1), ('h', 2), ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1),
+     ('n', 1), ('o', 4), ('p', 1), ('q', 1), ('r', 2), ('t', 2), ('u', 2),
      ('v', 1), ('w', 1), ('x', 1), ('y', 1), ('z', 1)]
     >>> sorted(frequencies('The Quick BROWN fox jumped! over... the ' \
          '(9lazy) DOG').items()) # doctest: +NORMALIZE_WHITESPACE
-    [(' ', 8), ('!', 1), ('(', 1), (')', 1), ('.', 3), ('9', 1), ('B', 1), 
-     ('D', 1), ('G', 1), ('N', 1), ('O', 2), ('Q', 1), ('R', 1), ('T', 1), 
-     ('W', 1), ('a', 1), ('c', 1), ('d', 1), ('e', 4), ('f', 1), ('h', 2), 
-     ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1), ('o', 2), ('p', 1), 
+    [(' ', 8), ('!', 1), ('(', 1), (')', 1), ('.', 3), ('9', 1), ('B', 1),
+     ('D', 1), ('G', 1), ('N', 1), ('O', 2), ('Q', 1), ('R', 1), ('T', 1),
+     ('W', 1), ('a', 1), ('c', 1), ('d', 1), ('e', 4), ('f', 1), ('h', 2),
+     ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1), ('o', 2), ('p', 1),
      ('r', 1), ('t', 1), ('u', 2), ('v', 1), ('x', 1), ('y', 1), ('z', 1)]
-    >>> sorted(frequencies(sanitise('The Quick BROWN fox jumped! over... ' \
+         >>> sorted(frequencies(sanitise('The Quick BROWN fox jumped! over... '\
          'the (9lazy) DOG')).items()) # doctest: +NORMALIZE_WHITESPACE
-    [('a', 1), ('b', 1), ('c', 1), ('d', 2), ('e', 4), ('f', 1), ('g', 1), 
-     ('h', 2), ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1), ('n', 1), 
-     ('o', 4), ('p', 1), ('q', 1), ('r', 2), ('t', 2), ('u', 2), ('v', 1), 
+    [('a', 1), ('b', 1), ('c', 1), ('d', 2), ('e', 4), ('f', 1), ('g', 1),
+     ('h', 2), ('i', 1), ('j', 1), ('k', 1), ('l', 1), ('m', 1), ('n', 1),
+     ('o', 4), ('p', 1), ('q', 1), ('r', 2), ('t', 2), ('u', 2), ('v', 1),
      ('w', 1), ('x', 1), ('y', 1), ('z', 1)]
     >>> frequencies('abcdefabcdef')['x']
     0
@@ -62,7 +62,7 @@ def frequencies(text):
 
 def caesar_break(message, fitness=Pletters):
     """Breaks a Caesar cipher using frequency analysis
-    
+
     >>> caesar_break('ibxcsyorsaqcheyklxivoexlevmrimwxsfiqevvmihrsasrxliwyrh' \
           'ecjsppsamrkwleppfmergefifvmhixscsymjcsyqeoixlm') # doctest: +ELLIPSIS
     (4, -130.849989015...)
@@ -80,7 +80,8 @@ def caesar_break(message, fitness=Pletters):
         plaintext = caesar_decipher(sanitised_message, shift)
         fit = fitness(plaintext)
         logger.debug('Caesar break attempt using key {0} gives fit of {1} '
-                      'and decrypt starting: {2}'.format(shift, fit, plaintext[:50]))
+            'and decrypt starting: {2}'.format(shift, fit,
+                plaintext[:50]))
         if fit > best_fit:
             best_fit = fit
             best_shift = shift
@@ -91,7 +92,7 @@ def caesar_break(message, fitness=Pletters):
 
 def affine_break(message, fitness=Pletters):
     """Breaks an affine cipher using frequency analysis
-    
+
     >>> affine_break('lmyfu bkuusd dyfaxw claol psfaom jfasd snsfg jfaoe ls ' \
           'omytd jlaxe mh jm bfmibj umis hfsul axubafkjamx. ls kffkxwsd jls ' \
           'ofgbjmwfkiu olfmxmtmwaokttg jlsx ls kffkxwsd jlsi zg tsxwjl. jlsx ' \
@@ -120,10 +121,10 @@ def affine_break(message, fitness=Pletters):
                     best_multiplier = multiplier
                     best_adder = adder
                     best_one_based = one_based
-    logger.info('Affine break best fit with key {0}x+{1} ({2}) gives fit of {3} '
-                'and decrypt starting: {4}'.format(
-                    best_multiplier, best_adder, best_one_based, best_fit, 
-                    affine_decipher(sanitised_message, best_multiplier, 
+    logger.info('Affine break best fit with key {0}x+{1} ({2}) gives fit of '
+                '{3} and decrypt starting: {4}'.format(
+                    best_multiplier, best_adder, best_one_based, best_fit,
+                    affine_decipher(sanitised_message, best_multiplier,
                         best_adder, best_one_based)[:50]))
     return (best_multiplier, best_adder, best_one_based), best_fit
 
@@ -145,16 +146,16 @@ def keyword_break(message, wordlist=keywords, fitness=Pletters):
             fit = fitness(plaintext)
             logger.debug('Keyword break attempt using key {0} (wrap={1}) '
                          'gives fit of {2} and decrypt starting: {3}'.format(
-                             keyword, wrap_alphabet, fit, 
+                             keyword, wrap_alphabet, fit,
                              sanitise(plaintext)[:50]))
             if fit > best_fit:
                 best_fit = fit
                 best_keyword = keyword
                 best_wrap_alphabet = wrap_alphabet
     logger.info('Keyword break best fit with key {0} (wrap={1}) gives fit of '
-                '{2} and decrypt starting: {3}'.format(best_keyword, 
+                '{2} and decrypt starting: {3}'.format(best_keyword,
                     best_wrap_alphabet, best_fit, sanitise(
-                        keyword_decipher(message, best_keyword, 
+                        keyword_decipher(message, best_keyword,
                                          best_wrap_alphabet))[:50]))
     return (best_keyword, best_wrap_alphabet), best_fit
 
@@ -168,12 +169,12 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters, chunksize=500
     (('elephant', <Keyword_wrap_alphabet.from_last: 2>), -52.834575011...)
     """
     with Pool() as pool:
-        helper_args = [(message, word, wrap, fitness) 
-                       for word in wordlist 
+        helper_args = [(message, word, wrap, fitness)
+                       for word in wordlist
                        for wrap in Keyword_wrap_alphabet]
-        # Gotcha: the helper function here needs to be defined at the top level 
+        # Gotcha: the helper function here needs to be defined at the top level
         #   (limitation of Pool.starmap)
-        breaks = pool.starmap(keyword_break_worker, helper_args, chunksize) 
+        breaks = pool.starmap(keyword_break_worker, helper_args, chunksize)
         return max(breaks, key=lambda k: k[1])
 
 def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
@@ -215,7 +216,8 @@ def monoalphabetic_break_hillclimbing_worker(message, alphabet,
         if i == j:
             return letters
         else:
-            return letters[:i] + letters[j] + letters[i+1:j] + letters[i] + letters[j+1:]
+            return letters[:i] + letters[j] + letters[i+1:j] + 
+                    letters[i] + letters[j+1:]
     best_alphabet = alphabet
     best_fitness = float('-inf')
     for i in range(max_iterations):
@@ -443,4 +445,3 @@ def plot_frequency_histogram(freqs, sort_key=None):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
