@@ -128,65 +128,6 @@ def affine_break(message, fitness=Pletters):
                                     best_adder, best_one_based)[:50]))
     return (best_multiplier, best_adder, best_one_based), best_fit
 
-def keyword_break(message, wordlist=keywords, fitness=Pletters):
-    """Breaks a keyword substitution cipher using a dictionary and
-    frequency analysis.
-
-    >>> keyword_break(keyword_encipher('this is a test message for the ' \
-          'keyword decipherment', 'elephant', KeywordWrapAlphabet.from_last), \
-          wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', <KeywordWrapAlphabet.from_last: 2>), -52.834575011...)
-    """
-    best_keyword = ''
-    best_wrap_alphabet = True
-    best_fit = float("-inf")
-    for wrap_alphabet in KeywordWrapAlphabet:
-        for keyword in wordlist:
-            plaintext = keyword_decipher(message, keyword, wrap_alphabet)
-            fit = fitness(plaintext)
-            logger.debug('Keyword break attempt using key {0} (wrap={1}) '
-                         'gives fit of {2} and decrypt starting: {3}'.format(
-                             keyword, wrap_alphabet, fit,
-                             sanitise(plaintext)[:50]))
-            if fit > best_fit:
-                best_fit = fit
-                best_keyword = keyword
-                best_wrap_alphabet = wrap_alphabet
-    logger.info('Keyword break best fit with key {0} (wrap={1}) gives fit of '
-                '{2} and decrypt starting: {3}'.format(best_keyword,
-                    best_wrap_alphabet, best_fit, sanitise(
-                        keyword_decipher(message, best_keyword,
-                                         best_wrap_alphabet))[:50]))
-    return (best_keyword, best_wrap_alphabet), best_fit
-
-def keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
-                     chunksize=500):
-    """Breaks a keyword substitution cipher using a dictionary and
-    frequency analysis
-
-    >>> keyword_break_mp(keyword_encipher('this is a test message for the ' \
-          'keyword decipherment', 'elephant', KeywordWrapAlphabet.from_last), \
-          wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    (('elephant', <KeywordWrapAlphabet.from_last: 2>), -52.834575011...)
-    """
-    with Pool() as pool:
-        helper_args = [(message, word, wrap, fitness)
-                       for word in wordlist
-                       for wrap in KeywordWrapAlphabet]
-        # Gotcha: the helper function here needs to be defined at the top level
-        #   (limitation of Pool.starmap)
-        breaks = pool.starmap(keyword_break_worker, helper_args, chunksize)
-        return max(breaks, key=lambda k: k[1])
-
-def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
-    plaintext = keyword_decipher(message, keyword, wrap_alphabet)
-    fit = fitness(plaintext)
-    logger.debug('Keyword break attempt using key {0} (wrap={1}) gives fit of '
-                 '{2} and decrypt starting: {3}'.format(keyword, 
-                     wrap_alphabet, fit, sanitise(plaintext)[:50]))
-    return (keyword, wrap_alphabet), fit
-
-
 
 def plot_frequency_histogram(freqs, sort_key=None):
     x = range(len(freqs.keys()))
