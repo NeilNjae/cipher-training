@@ -5,11 +5,7 @@ import string
 import collections
 import norms
 import logging
-import random
 import math
-from itertools import starmap
-from segment import segment
-from multiprocessing import Pool
 
 import matplotlib.pyplot as plt
 
