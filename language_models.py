@@ -65,12 +65,6 @@ def datafile(name, sep='\t'):
 english_counts = collections.Counter(dict(datafile('count_1l.txt')))
 normalised_english_counts = norms.normalise(english_counts)
 
-english_bigram_counts = collections.Counter(dict(datafile('count_2l.txt')))
-normalised_english_bigram_counts = norms.normalise(english_bigram_counts)
-
-english_trigram_counts = collections.Counter(dict(datafile('count_3l.txt')))
-normalised_english_trigram_counts = norms.normalise(english_trigram_counts)
-
 with open('words.txt', 'r') as f:
     keywords = [line.rstrip() for line in f]
 
@@ -90,19 +84,6 @@ def random_english_letter():
     """Generate a random letter based on English letter counts
     """
     return weighted_choice(normalised_english_counts)
-
-
-def ngrams(text, n):
-    """Returns all n-grams of a text
-    
-    >>> ngrams(sanitise('the quick brown fox'), 2) # doctest: +NORMALIZE_WHITESPACE
-    ['th', 'he', 'eq', 'qu', 'ui', 'ic', 'ck', 'kb', 'br', 'ro', 'ow', 'wn',
-     'nf', 'fo', 'ox']
-    >>> ngrams(sanitise('the quick brown fox'), 4) # doctest: +NORMALIZE_WHITESPACE
-    ['theq', 'hequ', 'equi', 'quic', 'uick', 'ickb', 'ckbr', 'kbro', 'brow',
-     'rown', 'ownf', 'wnfo', 'nfox']
-    """
-    return [text[i:i+n] for i in range(len(text)-n+1)]
 
 
 class Pdist(dict):
@@ -143,18 +124,6 @@ def Pletters(letters):
     """The Naive Bayes log probability of a sequence of letters.
     """
     return sum(Pl[l.lower()] for l in letters)
-
-def Pbigrams(letters):
-    """The Naive Bayes log probability of the bigrams formed from a sequence
-    of letters.
-    """
-    return sum(P2l[p] for p in ngrams(letters, 2))
-
-def Ptrigrams(letters):
-    """The Naive Bayes log probability of the trigrams formed from a sequence
-    of letters.
-    """
-    return sum(P3l[p] for p in ngrams(letters, 3))
 
 
 def cosine_similarity_score(text):

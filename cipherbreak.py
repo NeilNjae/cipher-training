@@ -235,101 +235,6 @@ def monoalphabetic_break_hillclimbing_worker(message, alphabet,
     return best_alphabet, best_fitness
 
 
-def column_transposition_break_mp(message, translist=transpositions,
-                                  fitness=Pbigrams, chunksize=500):
-    """Breaks a column transposition cipher using a dictionary and
-    n-gram frequency analysis
-
-    >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
-            "It is a truth universally acknowledged, that a single man in \
-             possession of a good fortune, must be in want of a wife. However \
-             little known the feelings or views of such a man may be on his \
-             first entering a neighbourhood, this truth is so well fixed in \
-             the minds of the surrounding families, that he is considered the \
-             rightful property of some one or other of their daughters."), \
-        'encipher'), \
-        translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
-                   (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
-                   (6, 1, 0, 4, 5, 3, 2): ['keyword']}) # doctest: +ELLIPSIS
-    (((2, 0, 5, 3, 1, 4, 6), False, False), -709.4646722...)
-    >>> column_transposition_break_mp(column_transposition_encipher(sanitise( \
-            "It is a truth universally acknowledged, that a single man in \
-             possession of a good fortune, must be in want of a wife. However \
-             little known the feelings or views of such a man may be on his \
-             first entering a neighbourhood, this truth is so well fixed in \
-             the minds of the surrounding families, that he is considered the \
-             rightful property of some one or other of their daughters."), \
-        'encipher'), \
-        translist={(2, 0, 5, 3, 1, 4, 6): ['encipher'], \
-                   (5, 0, 6, 1, 3, 4, 2): ['fourteen'], \
-                   (6, 1, 0, 4, 5, 3, 2): ['keyword']}, \
-        fitness=Ptrigrams) # doctest: +ELLIPSIS
-    (((2, 0, 5, 3, 1, 4, 6), False, False), -997.0129085...)
-    """
-    with Pool() as pool:
-        helper_args = [(message, trans, fillcolumnwise, emptycolumnwise,
-                        fitness)
-                       for trans in translist.keys()
-                       for fillcolumnwise in [True, False]
-                       for emptycolumnwise in [True, False]]
-        # Gotcha: the helper function here needs to be defined at the top level
-        #   (limitation of Pool.starmap)
-        breaks = pool.starmap(column_transposition_break_worker,
-                              helper_args, chunksize) 
-        return max(breaks, key=lambda k: k[1])
-column_transposition_break = column_transposition_break_mp
-
-def column_transposition_break_worker(message, transposition,
-        fillcolumnwise, emptycolumnwise, fitness):
-    plaintext = column_transposition_decipher(message, transposition,
-        fillcolumnwise=fillcolumnwise, emptycolumnwise=emptycolumnwise)
-    fit = fitness(sanitise(plaintext))
-    logger.debug('Column transposition break attempt using key {0} '
-                         'gives fit of {1} and decrypt starting: {2}'.format(
-                             transposition, fit, 
-                             sanitise(plaintext)[:50]))
-    return (transposition, fillcolumnwise, emptycolumnwise), fit
-
-
-def scytale_break_mp(message, max_key_length=20,
-                     fitness=Pbigrams, chunksize=500):
-    """Breaks a scytale cipher using a range of lengths and
-    n-gram frequency analysis
-
-    >>> scytale_break_mp(scytale_encipher(sanitise( \
-            "It is a truth universally acknowledged, that a single man in \
-             possession of a good fortune, must be in want of a wife. However \
-             little known the feelings or views of such a man may be on his \
-             first entering a neighbourhood, this truth is so well fixed in \
-             the minds of the surrounding families, that he is considered the \
-             rightful property of some one or other of their daughters."), \
-        5)) # doctest: +ELLIPSIS
-    (5, -709.4646722...)
-    >>> scytale_break_mp(scytale_encipher(sanitise( \
-            "It is a truth universally acknowledged, that a single man in \
-             possession of a good fortune, must be in want of a wife. However \
-             little known the feelings or views of such a man may be on his \
-             first entering a neighbourhood, this truth is so well fixed in \
-             the minds of the surrounding families, that he is considered the \
-             rightful property of some one or other of their daughters."), \
-        5), \
-        fitness=Ptrigrams) # doctest: +ELLIPSIS
-    (5, -997.0129085...)
-    """
-    with Pool() as pool:
-        helper_args = [(message, trans, False, True, fitness)
-            for trans in
-                [[col for col in range(math.ceil(len(message)/rows))]
-                    for rows in range(1,max_key_length+1)]]
-        # Gotcha: the helper function here needs to be defined at the top level
-        #   (limitation of Pool.starmap)
-        breaks = pool.starmap(column_transposition_break_worker,
-                              helper_args, chunksize)
-        best = max(breaks, key=lambda k: k[1])
-        return math.trunc(len(message) / len(best[0][0])), best[1]
-scytale_break = scytale_break_mp
-
-
 def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
                               chunksize=500):
     """Breaks a vigenere cipher using a dictionary and frequency analysis.
@@ -356,7 +261,6 @@ def vigenere_keyword_break_worker(message, keyword, fitness):
                  '{1} and decrypt starting: {2}'.format(keyword,
                      fit, sanitise(plaintext)[:50]))
     return keyword, fit
-
 
 
 def vigenere_frequency_break(message, max_key_length=20, fitness=Pletters):
