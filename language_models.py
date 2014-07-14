@@ -69,23 +69,6 @@ with open('words.txt', 'r') as f:
     keywords = [line.rstrip() for line in f]
 
 
-def weighted_choice(d):
-    """Generate random item from a dictionary of item counts
-    """
-    target = random.uniform(0, sum(d.values()))
-    cuml = 0.0
-    for (l, p) in d.items():
-        cuml += p
-        if cuml > target:
-            return l
-    return None
-
-def random_english_letter():
-    """Generate a random letter based on English letter counts
-    """
-    return weighted_choice(normalised_english_counts)
-
-
 class Pdist(dict):
     """A probability distribution estimated from counts in datafile.
     Values are stored and returned as log probabilities.
