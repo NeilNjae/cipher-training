@@ -309,30 +309,6 @@ def keyword_decipher(message, keyword,
     return message.lower().translate(cipher_translation)
 
 
-def vigenere_encipher(message, keyword):
-    """Vigenere encipher
-
-    >>> vigenere_encipher('hello', 'abc')
-    'hfnlp'
-    """
-    shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
-    pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_encipher_letter(l, k) for l, k in pairs])
-
-def vigenere_decipher(message, keyword):
-    """Vigenere decipher
-
-    >>> vigenere_decipher('hfnlp', 'abc')
-    'hello'
-    """
-    shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
-    pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_decipher_letter(l, k) for l, k in pairs])
-
-beaufort_encipher = vigenere_decipher
-beaufort_decipher = vigenere_encipher
-
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
