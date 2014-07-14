@@ -3,9 +3,10 @@ them. See cipherbreak for automatic breaking of these ciphers
 """
 
 import string
-import collections
-from enum import Enum
-from itertools import zip_longest, cycle, chain
+# import collections
+# from enum import Enum
+# from itertools import zip_longest, cycle, chain
+
 from language_models import unaccent, sanitise
 
 
