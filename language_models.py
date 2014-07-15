@@ -3,6 +3,8 @@ its use.
 """
 
 import string
+import norms
+import collections
 import unicodedata
 
 def letters(text):
@@ -47,7 +49,6 @@ def sanitise(text):
     # sanitised = [c.lower() for c in text if c in string.ascii_letters]
     # return ''.join(sanitised)
     return letters(unaccent(text)).lower()
-
 
 
 if __name__ == "__main__":
