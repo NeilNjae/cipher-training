@@ -5,7 +5,6 @@ import string
 import collections
 import norms
 import logging
-from segment import segment
 
 import matplotlib.pyplot as plt
 
