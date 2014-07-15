@@ -85,45 +85,6 @@ def caesar_break(message, fitness=Pletters):
                     caesar_decipher(sanitised_message, best_shift)[:50]))
     return best_shift, best_fit
 
-def affine_break(message, fitness=Pletters):
-    """Breaks an affine cipher using frequency analysis
-
-    >>> affine_break('lmyfu bkuusd dyfaxw claol psfaom jfasd snsfg jfaoe ls ' \
-          'omytd jlaxe mh jm bfmibj umis hfsul axubafkjamx. ls kffkxwsd jls ' \
-          'ofgbjmwfkiu olfmxmtmwaokttg jlsx ls kffkxwsd jlsi zg tsxwjl. jlsx ' \
-          'ls umfjsd jlsi zg hfsqysxog. ls dmmdtsd mx jls bats mh bkbsf. ls ' \
-          'bfmctsd kfmyxd jls lyj, mztanamyu xmc jm clm cku tmmeaxw kj lai ' \
-          'kxd clm ckuxj.') # doctest: +ELLIPSIS
-    ((15, 22, True), -340.601181913...)
-    """
-    sanitised_message = sanitise(message)
-    best_multiplier = 0
-    best_adder = 0
-    best_one_based = True
-    best_fit = float("-inf")
-    for one_based in [True, False]:
-        for multiplier in [x for x in range(1, 26, 2) if x != 13]:
-            for adder in range(26):
-                plaintext = affine_decipher(sanitised_message,
-                                            multiplier, adder, one_based)
-                fit = fitness(plaintext)
-                logger.debug('Affine break attempt using key {0}x+{1} ({2}) '
-                             'gives fit of {3} and decrypt starting: {4}'.
-                             format(multiplier, adder, one_based, fit,
-                                    plaintext[:50]))
-                if fit > best_fit:
-                    best_fit = fit
-                    best_multiplier = multiplier
-                    best_adder = adder
-                    best_one_based = one_based
-    logger.info('Affine break best fit with key {0}x+{1} ({2}) gives fit of '
-                '{3} and decrypt starting: {4}'.format(
-                    best_multiplier, best_adder, best_one_based, best_fit,
-                    affine_decipher(sanitised_message, best_multiplier,
-                                    best_adder, best_one_based)[:50]))
-    return (best_multiplier, best_adder, best_one_based), best_fit
-
-
 
 def plot_frequency_histogram(freqs, sort_key=None):
     x = range(len(freqs.keys()))
