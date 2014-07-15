@@ -4,7 +4,6 @@ them. See cipherbreak for automatic breaking of these ciphers
 
 import string
 import collections
-from enum import Enum
 from language_models import unaccent, sanitise
 
 
@@ -13,20 +12,6 @@ for a in range(26):
     for b in range(26):
         c = (a * b) % 26
         modular_division_table[b][c] = a
-
-
-def deduplicate(text):
-    """If a string contains duplicate letters, remove all but the first. Retain
-    the order of the letters.
-
-    >>> deduplicate('cat')
-    ['c', 'a', 't']
-    >>> deduplicate('happy')
-    ['h', 'a', 'p', 'y']
-    >>> deduplicate('cattca')
-    ['c', 'a', 't']
-    """
-    return list(collections.OrderedDict.fromkeys(text))
 
 
 def caesar_encipher_letter(accented_letter, shift):
@@ -178,88 +163,6 @@ def affine_decipher(message, multiplier=1, adder=0, one_based=True):
     return ''.join(enciphered)
 
 
-class KeywordWrapAlphabet(Enum):
-    """Ways of wrapping the alphabet for keyword-based substitution ciphers."""
-    from_a = 1
-    from_last = 2
-    from_largest = 3
-
-
-def keyword_cipher_alphabet_of(keyword,
-        wrap_alphabet=KeywordWrapAlphabet.from_a):
-    """Find the cipher alphabet given a keyword.
-    wrap_alphabet controls how the rest of the alphabet is added
-    after the keyword.
-
-    >>> keyword_cipher_alphabet_of('bayes')
-    'bayescdfghijklmnopqrtuvwxz'
-    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_a)
-    'bayescdfghijklmnopqrtuvwxz'
-    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_last)
-    'bayestuvwxzcdfghijklmnopqr'
-    >>> keyword_cipher_alphabet_of('bayes', KeywordWrapAlphabet.from_largest)
-    'bayeszcdfghijklmnopqrtuvwx'
-    """
-    if wrap_alphabet == KeywordWrapAlphabet.from_a:
-        cipher_alphabet = ''.join(deduplicate(sanitise(keyword) +
-                                              string.ascii_lowercase))
-    else:
-        if wrap_alphabet == KeywordWrapAlphabet.from_last:
-            last_keyword_letter = deduplicate(sanitise(keyword))[-1]
-        else:
-            last_keyword_letter = sorted(sanitise(keyword))[-1]
-        last_keyword_position = string.ascii_lowercase.find(
-            last_keyword_letter) + 1
-        cipher_alphabet = ''.join(
-            deduplicate(sanitise(keyword) +
-                        string.ascii_lowercase[last_keyword_position:] +
-                        string.ascii_lowercase))
-    return cipher_alphabet
-
-
-def keyword_encipher(message, keyword,
-                     wrap_alphabet=KeywordWrapAlphabet.from_a):
-    """Enciphers a message with a keyword substitution cipher.
-    wrap_alphabet controls how the rest of the alphabet is added
-    after the keyword.
-    0 : from 'a'
-    1 : from the last letter in the sanitised keyword
-    2 : from the largest letter in the sanitised keyword
-
-    >>> keyword_encipher('test message', 'bayes')
-    'rsqr ksqqbds'
-    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_a)
-    'rsqr ksqqbds'
-    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_last)
-    'lskl dskkbus'
-    >>> keyword_encipher('test message', 'bayes', KeywordWrapAlphabet.from_largest)
-    'qspq jsppbcs'
-    """
-    cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
-    cipher_translation = ''.maketrans(string.ascii_lowercase, cipher_alphabet)
-    return unaccent(message).lower().translate(cipher_translation)
-
-def keyword_decipher(message, keyword, 
-                     wrap_alphabet=KeywordWrapAlphabet.from_a):
-    """Deciphers a message with a keyword substitution cipher.
-    wrap_alphabet controls how the rest of the alphabet is added
-    after the keyword.
-    0 : from 'a'
-    1 : from the last letter in the sanitised keyword
-    2 : from the largest letter in the sanitised keyword
-
-    >>> keyword_decipher('rsqr ksqqbds', 'bayes')
-    'test message'
-    >>> keyword_decipher('rsqr ksqqbds', 'bayes', KeywordWrapAlphabet.from_a)
-    'test message'
-    >>> keyword_decipher('lskl dskkbus', 'bayes', KeywordWrapAlphabet.from_last)
-    'test message'
-    >>> keyword_decipher('qspq jsppbcs', 'bayes', KeywordWrapAlphabet.from_largest)
-    'test message'
-    """
-    cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
-    cipher_translation = ''.maketrans(cipher_alphabet, string.ascii_lowercase)
-    return message.lower().translate(cipher_translation)
 
 if __name__ == "__main__":
     import doctest
