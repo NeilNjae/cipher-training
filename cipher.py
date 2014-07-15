@@ -16,52 +16,6 @@ for a in range(26):
         modular_division_table[b][c] = a
 
 
-def every_nth(text, n, fillvalue=''):
-    """Returns n strings, each of which consists of every nth character,
-    starting with the 0th, 1st, 2nd, ... (n-1)th character
-
-    >>> every_nth(string.ascii_lowercase, 5)
-    ['afkpuz', 'bglqv', 'chmrw', 'dinsx', 'ejoty']
-    >>> every_nth(string.ascii_lowercase, 1)
-    ['abcdefghijklmnopqrstuvwxyz']
-    >>> every_nth(string.ascii_lowercase, 26) # doctest: +NORMALIZE_WHITESPACE
-    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-     'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-    >>> every_nth(string.ascii_lowercase, 5, fillvalue='!')
-    ['afkpuz', 'bglqv!', 'chmrw!', 'dinsx!', 'ejoty!']
-    """
-    split_text = chunks(text, n, fillvalue)
-    return [''.join(l) for l in zip_longest(*split_text, fillvalue=fillvalue)]
-
-def combine_every_nth(split_text):
-    """Reforms a text split into every_nth strings
-
-    >>> combine_every_nth(every_nth(string.ascii_lowercase, 5))
-    'abcdefghijklmnopqrstuvwxyz'
-    >>> combine_every_nth(every_nth(string.ascii_lowercase, 1))
-    'abcdefghijklmnopqrstuvwxyz'
-    >>> combine_every_nth(every_nth(string.ascii_lowercase, 26))
-    'abcdefghijklmnopqrstuvwxyz'
-    """
-    return ''.join([''.join(l)
-                    for l in zip_longest(*split_text, fillvalue='')])
-
-def chunks(text, n, fillvalue=None):
-    """Split a text into chunks of n characters
-
-    >>> chunks('abcdefghi', 3)
-    ['abc', 'def', 'ghi']
-    >>> chunks('abcdefghi', 4)
-    ['abcd', 'efgh', 'i']
-    >>> chunks('abcdefghi', 4, fillvalue='!')
-    ['abcd', 'efgh', 'i!!!']
-    """
-    if fillvalue:
-        padding = fillvalue[0] * (n - len(text) % n)
-    else:
-        padding = ''
-    return [(text+padding)[i:i+n] for i in range(0, len(text), n)]
-
 def deduplicate(text):
     """If a string contains duplicate letters, remove all but the first. Retain
     the order of the letters.
@@ -307,31 +261,6 @@ def keyword_decipher(message, keyword,
     cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
     cipher_translation = ''.maketrans(cipher_alphabet, string.ascii_lowercase)
     return message.lower().translate(cipher_translation)
-
-
-def vigenere_encipher(message, keyword):
-    """Vigenere encipher
-
-    >>> vigenere_encipher('hello', 'abc')
-    'hfnlp'
-    """
-    shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
-    pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_encipher_letter(l, k) for l, k in pairs])
-
-def vigenere_decipher(message, keyword):
-    """Vigenere decipher
-
-    >>> vigenere_decipher('hfnlp', 'abc')
-    'hello'
-    """
-    shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
-    pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_decipher_letter(l, k) for l, k in pairs])
-
-beaufort_encipher = vigenere_decipher
-beaufort_decipher = vigenere_encipher
-
 
 if __name__ == "__main__":
     import doctest
