@@ -7,13 +7,6 @@ import collections
 from language_models import unaccent, sanitise
 
 
-modular_division_table = [[0]*26 for _ in range(26)]
-for a in range(26):
-    for b in range(26):
-        c = (a * b) % 26
-        modular_division_table[b][c] = a
-
-
 def caesar_encipher_letter(accented_letter, shift):
     """Encipher a letter, given a shift amount
 
@@ -89,79 +82,6 @@ def caesar_decipher(message, shift):
     'Hello World!'
     """
     return caesar_encipher(message, -shift)
-
-def affine_encipher_letter(accented_letter, multiplier=1, adder=0,
-                           one_based=True):
-    """Encipher a letter, given a multiplier and adder
-    >>> ''.join([affine_encipher_letter(l, 3, 5, True) \
-            for l in string.ascii_uppercase])
-    'HKNQTWZCFILORUXADGJMPSVYBE'
-    >>> ''.join([affine_encipher_letter(l, 3, 5, False) \
-            for l in string.ascii_uppercase])
-    'FILORUXADGJMPSVYBEHKNQTWZC'
-    """
-    letter = unaccent(accented_letter)
-    if letter in string.ascii_letters:
-        if letter in string.ascii_uppercase:
-            alphabet_start = ord('A')
-        else:
-            alphabet_start = ord('a')
-        letter_number = ord(letter) - alphabet_start
-        if one_based: letter_number += 1
-        cipher_number = (letter_number * multiplier + adder) % 26
-        if one_based: cipher_number -= 1
-        return chr(cipher_number % 26 + alphabet_start)
-    else:
-        return letter
-
-def affine_decipher_letter(letter, multiplier=1, adder=0, one_based=True):
-    """Encipher a letter, given a multiplier and adder
-
-    >>> ''.join([affine_decipher_letter(l, 3, 5, True) \
-            for l in 'HKNQTWZCFILORUXADGJMPSVYBE'])
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    >>> ''.join([affine_decipher_letter(l, 3, 5, False) \
-            for l in 'FILORUXADGJMPSVYBEHKNQTWZC'])
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    """
-    if letter in string.ascii_letters:
-        if letter in string.ascii_uppercase:
-            alphabet_start = ord('A')
-        else:
-            alphabet_start = ord('a')
-        cipher_number = ord(letter) - alphabet_start
-        if one_based: cipher_number += 1
-        plaintext_number = (
-            modular_division_table[multiplier]
-                                  [(cipher_number - adder) % 26]
-                            )
-        if one_based: plaintext_number -= 1
-        return chr(plaintext_number % 26 + alphabet_start)
-    else:
-        return letter
-
-def affine_encipher(message, multiplier=1, adder=0, one_based=True):
-    """Encipher a message
-
-    >>> affine_encipher('hours passed during which jerico tried every ' \
-           'trick he could think of', 15, 22, True)
-    'lmyfu bkuusd dyfaxw claol psfaom jfasd snsfg jfaoe ls omytd jlaxe mh'
-    """
-    enciphered = [affine_encipher_letter(l, multiplier, adder, one_based)
-                  for l in message]
-    return ''.join(enciphered)
-
-def affine_decipher(message, multiplier=1, adder=0, one_based=True):
-    """Decipher a message
-
-    >>> affine_decipher('lmyfu bkuusd dyfaxw claol psfaom jfasd snsfg ' \
-           'jfaoe ls omytd jlaxe mh', 15, 22, True)
-    'hours passed during which jerico tried every trick he could think of'
-    """
-    enciphered = [affine_decipher_letter(l, multiplier, adder, one_based)
-                  for l in message]
-    return ''.join(enciphered)
-
 
 
 if __name__ == "__main__":
