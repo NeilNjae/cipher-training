@@ -37,6 +37,11 @@
         text-shadow: 0 0 20px #333;
         padding: 2px 5px;
       }
+      .indexlink {
+        position: absolute;
+        bottom: 1em;
+        left: 1em;
+      }
        .float-right {
         float: right;
       }
@@ -56,9 +61,16 @@ An extension of Caesar ciphers
 * Count the gaps in the letters.
 
 ---
+
+layout: true
+
+.indexlink[[Index](index.html)]
+
+---
+
 # How affine ciphers work
 
-_ciphertext_letter_ =_plaintext_letter_ × a + b
+.ciphertext[_ciphertext_letter_] =.plaintext[_plaintext_letter_] × a + b
 
 * Convert letters to numbers
 * Take the total modulus 26
@@ -83,11 +95,11 @@ This is not always defined in modular arithmetic. For instance, 7 × 4 = 28 = 2 
 
 Result from number theory: only numbers coprime with _n_ have multiplicative inverses in arithmetic mod _n_.
 
-Another result from number theory: for non-negative integers _a_ and _n_, and there exist unique integers _x_ and _y_ such that _ax_ + _ny_ = gcd(_a_, _b_)
+Another result from number theory: for non-negative integers _m_ and _n_, and there exist unique integers _x_ and _y_ such that _mx_ + _ny_ = gcd(_m_, _n_)
 
 Coprime numbers have gcd of 1.
 
-_ax_ + _ny_ = 1 mod _n_. But _ny_ mod _n_ = 0, so _ax_ = 1 mod _n_, so _a_ = _x_<sup>-1</sup>.
+_mx_ + _ny_ = 1 mod _n_. But _ny_ mod _n_ = 0, so _mx_ = 1 mod _m_, so _m_ = _x_<sup>-1</sup>.
 
 Perhaps the algorithm for finding gcds could be useful?
 

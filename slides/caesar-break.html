@@ -37,6 +37,11 @@
         text-shadow: 0 0 20px #333;
         padding: 2px 5px;
       }
+      .indexlink {
+        position: absolute;
+        bottom: 1em;
+        left: 1em;
+      }
        .float-right {
         float: right;
       }
@@ -48,6 +53,12 @@
 # Breaking caesar ciphers
 
 ![center-aligned Caesar wheel](caesarwheel1.gif)
+
+---
+
+layout: true
+
+.indexlink[[Index](index.html)]
 
 ---
 
@@ -92,6 +103,8 @@ What does English look like?
 * We need a model of English.
 
 How do we define "closeness"?
+
+## Here begineth the yak shaving
 
 ---
 
@@ -154,6 +167,7 @@ open()
 * Count them
 ```python
 import collections
+collections.Counter()
 ```
 
 Create the `language_models.py` file for this.
@@ -279,7 +293,7 @@ Use `logger.debug()`, `logger.info()`, etc. to log a message.
 
 ---
 
-# How much ciphertext do we need?
+# Homework: how much ciphertext do we need?
 
 ## Let's do an experiment to find out
 
@@ -289,6 +303,18 @@ Use `logger.debug()`, `logger.info()`, etc. to log a message.
 4. Score 1 point if `caesar_cipher_break()` recovers the correct key
 5. Repeat many times and with many plaintext lengths
 
+```python
+import csv
+
+def show_results():
+    with open('caesar_break_parameter_trials.csv', 'w') as f:
+        writer = csv.DictWriter(f, ['name'] + message_lengths, 
+            quoting=csv.QUOTE_NONNUMERIC)
+        writer.writeheader()
+        for scoring in sorted(scores.keys()):
+            scores[scoring]['name'] = scoring
+            writer.writerow(scores[scoring])
+```
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
