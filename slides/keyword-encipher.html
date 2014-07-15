@@ -37,6 +37,11 @@
         text-shadow: 0 0 20px #333;
         padding: 2px 5px;
       }
+      .indexlink {
+        position: absolute;
+        bottom: 1em;
+        left: 1em;
+      }
        .float-right {
         float: right;
       }
@@ -52,6 +57,12 @@ a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | 
 k | e | y | w | o | r | d | a | b | c | f | g | h | i | j | l | m | n | p | q | s | t | u | v | x | z
 
 * Taking a more Pythonic approach
+
+---
+
+layout: true
+
+.indexlink[[Index](index.html)]
 
 ---
 
@@ -116,7 +127,7 @@ Use Python 3.4's `Enum`
 ```python
 from enum import Enum
 
-class Keyword_wrap_alphabet(Enum):
+class KeywordWrapAlphabet(Enum):
     from_a = 1
     from_last = 2
     from_largest = 3
