@@ -129,7 +129,7 @@ Constructor (`__init__`) takes a data file, does all the adding up and taking lo
 ```python
 class Pdist(dict):
     def __init__(self, data=[]):
-        for key, count in data2:
+        for key, count in data:
             ...
         self.total = ...
     def __missing__(self, key):
@@ -177,9 +177,9 @@ To segment a string:
     return the split with highest score
 ```
 
-Indexing pulls out letters. `'sometext'[0]` = 's' ; `'keyword'[3]` = 'e' ; `'keyword'[-1]` = 't'
+Indexing pulls out letters. `'sometext'[0]` = 's' ; `'sometext'[3]` = 'e' ; `'sometext'[-1]` = 't'
 
-Slices pulls out substrings. `'keyword'[1:4]` = 'ome' ; `'keyword'[:3]` = 'som' ; `'keyword'[5:]` = 'ext'
+Slices pulls out substrings. `'sometext'[1:4]` = 'ome' ; `'sometext'[:3]` = 'som' ; `'sometext'[5:]` = 'ext'
 
 `range()` will sweep across the string
 

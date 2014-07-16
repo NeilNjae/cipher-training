@@ -82,6 +82,34 @@ chr()
 
 ---
 
+# Using the tools
+
+Before doing anything, create a new branch in Git
+
+* This will keep your changes isolated
+
+Experiment in IPython (ephemeral, for us)
+
+Once you've got something working, copy the code into a `.py` file (permanent and reusable)
+
+```python
+from imp import reload
+
+import test
+reload(test)
+from test import *
+```
+
+Re-evaluate the second cell to reload the file into the IPython notebook
+
+When you've made progress, make a Git commit
+
+* Commit early and often!
+
+When you've finished, change back to `master` branch and `merge` the development branch
+
+---
+
 # The [string module](http://docs.python.org/3.3/library/string.html) is your friend
 
 ```python
@@ -95,6 +123,7 @@ string.punctuation
 ```
 
 ---
+
 # DRY and YAGNI
 
 Is your code DRY?
@@ -131,7 +160,7 @@ if __name__ == "__main__":
 
 ---
 
-# Doing all the letters
+# Doing the whole message
 
 ## Test-first developement
 
@@ -142,7 +171,7 @@ if __name__ == "__main__":
 
 ---
 
-# Doing all the letters
+# Doing the whole message
 
 ## Abysmal
 
@@ -152,9 +181,11 @@ for i in range(len(plaintext)):
     ciphertext += caesar_encipher_letter(plaintext[i], key)
 ```
 
+Try it in IPython
+
 ---
 
-# Doing all the letters
+# Doing the whole message
 
 ## Bad
 
@@ -168,7 +199,7 @@ for p in plaintext:
 
 ---
 
-# Doing all the letters
+# Doing the whole message
 
 ## Good (but unPythonic)
 
@@ -178,7 +209,7 @@ ciphertext = map(lambda p: caesar_encipher_letter(p, key), plaintext)
 
 ---
 
-# Doing all the letters
+# Doing the whole message
 
 ## Best
 
