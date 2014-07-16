@@ -3,6 +3,7 @@
   <head>
     <title>Aims</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href='http://fonts.googleapis.com/css?family=Calligraffitti' rel='stylesheet' type='text/css'>
     <style type="text/css">
       /* Slideshow styles */
       body {
@@ -37,6 +38,14 @@
         text-shadow: 0 0 20px #333;
         padding: 2px 5px;
       }
+      .quote {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+        font-size: 26px;
+        font-family: 'Calligraffitti', cursive;
+      }
       .indexlink {
         position: absolute;
         bottom: 1em;
@@ -67,8 +76,11 @@ After your suggestions on how to extend these notes to hit these audiences
 
 # Programming != Computing
 
-> Computational thinking is like architectural thinking. Programming is like
-> bricklaying. 
+.quote[
+> Computational thinking is like architectural thinking. 
+>
+> Programming is like bricklaying.
+]
 
 This course will cover four things, in increasing order of importance.
 
@@ -76,6 +88,27 @@ This course will cover four things, in increasing order of importance.
 2. Show off some tools: IPython, git, doctest.
 3. Explore some different corners of Python (itertools, multiprocessing).
 4. Expose my thinking for how to solve these problems. 
+
+---
+
+# Idiomatic Python
+
+Pythonistas are keen on writing idiomatic Python.
+
+It's often clearer and more efficient than writing C, Perl, or even Ruby in Python.
+
+* [PEP-8](http://legacy.python.org/dev/peps/pep-0008/) is the fundamental 
+  style guide. Consider getting a linter (`pylint`?)
+* [Python Cookbok](http://shop.oreilly.com/product/9780596001674.do) has lots of
+  recipies for doing things in Python
+* [Idiomatic Python](http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html): 
+  Good style, but dated for Python 2
+* [Writing Idiomatic Python](http://www.jeffknupp.com/blog/2012/10/04/writing-idiomatic-python/):
+  Enough there to tempt me to buy [the book](http://www.jeffknupp.com/blog/2012/10/04/writing-idiomatic-python/)
+* [Python Guide](http://docs.python-guide.org/en/latest/writing/style/): nice 
+  complement to the above
+* [Python antipatterns](http://lignos.org/py_antipatterns/): things to avoid 
+  when writing Python
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-0.6.0.min.js" type="text/javascript">
