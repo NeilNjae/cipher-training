@@ -128,11 +128,11 @@ Use this to predict the probability of each letter, and hence the probability of
 
 ---
 
-# An infinite number of monkeys
+.float-right[![right-aligned Typing monkey](typingmonkeylarge.jpg)]
+
+# Naive Bayes, or the bag of letters
 
 What is the probability that this string of letters is a sample of English?
-
-## Naive Bayes, or the bag of letters
 
 Ignore letter order, just treat each letter individually.
 
@@ -234,12 +234,19 @@ def unaccent(text):
 
 1. Read from `shakespeare.txt`, `sherlock-holmes.txt`, and `war-and-peace.txt`.
 2. Find the frequencies (`.update()`)
-3. Sort by count 
-4. Write counts to `count_1l.txt` (`'text{}\n'.format()`)
+3. Sort by count (read the docs...)
+4. Write counts to `count_1l.txt` 
+```python
+with open('count_1l.txt', 'w') as f:
+    for each letter...:
+        f.write('text\t{}\n'.format(count))
+```
 
 ---
 
 # Reading letter probabilities
+
+New file: `language_models.py`
 
 1. Load the file `count_1l.txt` into a dict, with letters as keys.
 
@@ -256,6 +263,8 @@ def unaccent(text):
 ---
 
 # Breaking caesar ciphers
+
+New file: `cipherbreak.py`
 
 ## Remember the basic idea
 
