@@ -100,7 +100,7 @@ def ngrams(text, n):
     """
     return [text[i:i+n] for i in range(len(text)-n+1)]
 
-
+    
 class Pdist(dict):
     """A probability distribution estimated from counts in datafile.
     Values are stored and returned as log probabilities.
