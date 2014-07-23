@@ -13,7 +13,7 @@ def normalise(frequencies):
     >>> sorted(normalise({1: 1, 2: 2, 3: 1}).items())
     [(1, 0.25), (2, 0.5), (3, 0.25)]
     """
-    length = sum([f for f in frequencies.values()])
+    length = sum(f for f in frequencies.values())
     return collections.defaultdict(int, ((k, v / length) 
         for (k, v) in frequencies.items()))
 

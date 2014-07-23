@@ -207,6 +207,8 @@ Text encodings will bite you when you least expect it.
 # Five minutes on StackOverflow later...
 
 ```python
+import unicodedata
+
 def unaccent(text):
     """Remove all accents from letters. 
     It does this by converting the unicode string to decomposed compatibility

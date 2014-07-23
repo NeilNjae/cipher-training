@@ -212,7 +212,7 @@ def affine_decipher_letter(letter, multiplier=1, adder=0, one_based=True):
         if one_based: cipher_number += 1
         plaintext_number = ( 
             modular_division_table[multiplier]
-                                  [(cipher_number - adder) % 26] )
+                                  [(cipher_number - adder) % 26])
         if one_based: plaintext_number -= 1
         return chr(plaintext_number % 26 + alphabet_start) 
     else:
@@ -566,7 +566,7 @@ class PocketEnigma(object):
         >>> pe.validate_wheel_spec([])
         Traceback (most recent call last):
             ...
-        ValueError: Wheel specification has 0 pairs, require 13
+        ValueError: Wheel specification has 0 pairs, requires 13
         >>> pe.validate_wheel_spec([('a', 'b', 'c')]*13)
         Traceback (most recent call last):
             ...
