@@ -163,7 +163,7 @@ def keyword_break(message, wordlist=keywords, fitness=Pletters):
     return (best_keyword, best_wrap_alphabet), best_fit
 
 def keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
-                     chunksize=500):
+                     number_of_solutions=1, chunksize=500):
     """Breaks a keyword substitution cipher using a dictionary and
     frequency analysis
 
@@ -171,6 +171,12 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
           'keyword decipherment', 'elephant', KeywordWrapAlphabet.from_last), \
           wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
     (('elephant', <KeywordWrapAlphabet.from_last: 2>), -52.834575011...)
+    >>> keyword_break_mp(keyword_encipher('this is a test message for the ' \
+          'keyword decipherment', 'elephant', KeywordWrapAlphabet.from_last), \
+          wordlist=['cat', 'elephant', 'kangaroo'], \
+          number_of_solutions=2) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    [(('elephant', <KeywordWrapAlphabet.from_last: 2>), -52.834575011...), 
+    (('elephant', <KeywordWrapAlphabet.from_largest: 3>), -52.834575011...)]
     """
     with Pool() as pool:
         helper_args = [(message, word, wrap, fitness)
@@ -179,7 +185,10 @@ def keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
         # Gotcha: the helper function here needs to be defined at the top level
         #   (limitation of Pool.starmap)
         breaks = pool.starmap(keyword_break_worker, helper_args, chunksize)
-        return max(breaks, key=lambda k: k[1])
+        if number_of_solutions == 1:
+            return max(breaks, key=lambda k: k[1])
+        else:
+            return sorted(breaks, key=lambda k: k[1], reverse=True)[:number_of_solutions]
 
 def keyword_break_worker(message, keyword, wrap_alphabet, fitness):
     plaintext = keyword_decipher(message, keyword, wrap_alphabet)
