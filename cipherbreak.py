@@ -244,6 +244,83 @@ def monoalphabetic_break_hillclimbing_worker(message, alphabet,
     return best_alphabet, best_fitness
 
 
+def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
+                              chunksize=500):
+    """Breaks a vigenere cipher using a dictionary and frequency analysis.
+
+    >>> vigenere_keyword_break_mp(vigenere_encipher(sanitise('this is a test ' \
+             'message for the vigenere decipherment'), 'cat'), \
+             wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
+    ('cat', -52.947271216...)
+    """
+    with Pool() as pool:
+        helper_args = [(message, word, fitness)
+                       for word in wordlist]
+        # Gotcha: the helper function here needs to be defined at the top level
+        #   (limitation of Pool.starmap)
+        breaks = pool.starmap(vigenere_keyword_break_worker, helper_args,
+                              chunksize)
+        return max(breaks, key=lambda k: k[1])
+vigenere_keyword_break = vigenere_keyword_break_mp
+
+def vigenere_keyword_break_worker(message, keyword, fitness):
+    plaintext = vigenere_decipher(message, keyword)
+    fit = fitness(plaintext)
+    logger.debug('Vigenere keyword break attempt using key {0} gives fit of '
+                 '{1} and decrypt starting: {2}'.format(keyword,
+                     fit, sanitise(plaintext)[:50]))
+    return keyword, fit
+
+
+def vigenere_frequency_break(message, max_key_length=20, fitness=Pletters):
+    """Breaks a Vigenere cipher with frequency analysis
+
+    >>> vigenere_frequency_break(vigenere_encipher(sanitise("It is time to " \
+            "run. She is ready and so am I. I stole Daniel's pocketbook this " \
+            "afternoon when he left his jacket hanging on the easel in the " \
+            "attic. I jump every time I hear a footstep on the stairs, " \
+            "certain that the theft has been discovered and that I will " \
+            "be caught. The SS officer visits less often now that he is " \
+            "sure"), 'florence')) # doctest: +ELLIPSIS
+    ('florence', -307.5473096791...)
+    """
+    def worker(message, key_length, fitness):
+        splits = every_nth(sanitised_message, key_length)
+        key = ''.join([chr(caesar_break(s)[0] + ord('a')) for s in splits])
+        plaintext = vigenere_decipher(message, key)
+        fit = fitness(plaintext)
+        return key, fit
+    sanitised_message = sanitise(message)
+    results = starmap(worker, [(sanitised_message, i, fitness)
+                               for i in range(1, max_key_length+1)])
+    return max(results, key=lambda k: k[1])
+
+
+def beaufort_frequency_break(message, max_key_length=20, fitness=Pletters):
+    """Breaks a Beaufort cipher with frequency analysis
+
+    >>> beaufort_frequency_break(beaufort_encipher(sanitise("It is time to " \
+            "run. She is ready and so am I. I stole Daniel's pocketbook this " \
+            "afternoon when he left his jacket hanging on the easel in the " \
+            "attic. I jump every time I hear a footstep on the stairs, " \
+            "certain that the theft has been discovered and that I will " \
+            "be caught. The SS officer visits less often now " \
+            "that he is sure"), 'florence')) # doctest: +ELLIPSIS
+    ('florence', -307.5473096791...)
+    """
+    def worker(message, key_length, fitness):
+        splits = every_nth(sanitised_message, key_length)
+        key = ''.join([chr(-caesar_break(s)[0] % 26 + ord('a'))
+                       for s in splits])
+        plaintext = beaufort_decipher(message, key)
+        fit = fitness(plaintext)
+        return key, fit
+    sanitised_message = sanitise(message)
+    results = starmap(worker, [(sanitised_message, i, fitness)
+                               for i in range(1, max_key_length+1)])
+    return max(results, key=lambda k: k[1])
+
+
 def column_transposition_break_mp(message, translist=transpositions,
                                   fitness=Pbigrams, chunksize=500):
     """Breaks a column transposition cipher using a dictionary and
@@ -339,82 +416,53 @@ def scytale_break_mp(message, max_key_length=20,
 scytale_break = scytale_break_mp
 
 
-def vigenere_keyword_break_mp(message, wordlist=keywords, fitness=Pletters,
-                              chunksize=500):
-    """Breaks a vigenere cipher using a dictionary and frequency analysis.
+def railfence_break(message, max_key_length=20,
+                     fitness=Pbigrams, chunksize=500):
+    """Breaks a railfence cipher using a range of lengths and
+    n-gram frequency analysis
 
-    >>> vigenere_keyword_break_mp(vigenere_encipher(sanitise('this is a test ' \
-             'message for the vigenere decipherment'), 'cat'), \
-             wordlist=['cat', 'elephant', 'kangaroo']) # doctest: +ELLIPSIS
-    ('cat', -52.947271216...)
+    >>> railfence_break(railfence_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in \
+             the minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        7)) # doctest: +ELLIPSIS
+    (7, -709.46467226...)
+    >>> railfence_break(railfence_encipher(sanitise( \
+            "It is a truth universally acknowledged, that a single man in \
+             possession of a good fortune, must be in want of a wife. However \
+             little known the feelings or views of such a man may be on his \
+             first entering a neighbourhood, this truth is so well fixed in \
+             the minds of the surrounding families, that he is considered the \
+             rightful property of some one or other of their daughters."), \
+        7), \
+        fitness=Ptrigrams) # doctest: +ELLIPSIS
+    (7, -997.0129085...)
     """
+    def worker(message, height, fitness):
+        plaintext = railfence_decipher(message, height)
+        fit = fitness(plaintext)
+        return height, fit
+    sanitised_message = sanitise(message)
+    results = starmap(worker, [(sanitised_message, i, fitness)
+                               for i in range(2, max_key_length+1)])
+    return max(results, key=lambda k: k[1])
+
+
     with Pool() as pool:
-        helper_args = [(message, word, fitness)
-                       for word in wordlist]
+        helper_args = [(message, trans, False, True, fitness)
+            for trans in
+                [[col for col in range(math.ceil(len(message)/rows))]
+                    for rows in range(1,max_key_length+1)]]
         # Gotcha: the helper function here needs to be defined at the top level
         #   (limitation of Pool.starmap)
-        breaks = pool.starmap(vigenere_keyword_break_worker, helper_args,
-                              chunksize)
-        return max(breaks, key=lambda k: k[1])
-vigenere_keyword_break = vigenere_keyword_break_mp
-
-def vigenere_keyword_break_worker(message, keyword, fitness):
-    plaintext = vigenere_decipher(message, keyword)
-    fit = fitness(plaintext)
-    logger.debug('Vigenere keyword break attempt using key {0} gives fit of '
-                 '{1} and decrypt starting: {2}'.format(keyword,
-                     fit, sanitise(plaintext)[:50]))
-    return keyword, fit
-
-
-
-def vigenere_frequency_break(message, max_key_length=20, fitness=Pletters):
-    """Breaks a Vigenere cipher with frequency analysis
-
-    >>> vigenere_frequency_break(vigenere_encipher(sanitise("It is time to " \
-            "run. She is ready and so am I. I stole Daniel's pocketbook this " \
-            "afternoon when he left his jacket hanging on the easel in the " \
-            "attic. I jump every time I hear a footstep on the stairs, " \
-            "certain that the theft has been discovered and that I will " \
-            "be caught. The SS officer visits less often now that he is " \
-            "sure"), 'florence')) # doctest: +ELLIPSIS
-    ('florence', -307.5473096791...)
-    """
-    def worker(message, key_length, fitness):
-        splits = every_nth(sanitised_message, key_length)
-        key = ''.join([chr(caesar_break(s)[0] + ord('a')) for s in splits])
-        plaintext = vigenere_decipher(message, key)
-        fit = fitness(plaintext)
-        return key, fit
-    sanitised_message = sanitise(message)
-    results = starmap(worker, [(sanitised_message, i, fitness)
-                               for i in range(1, max_key_length+1)])
-    return max(results, key=lambda k: k[1])
-
-
-def beaufort_frequency_break(message, max_key_length=20, fitness=Pletters):
-    """Breaks a Beaufort cipher with frequency analysis
-
-    >>> beaufort_frequency_break(beaufort_encipher(sanitise("It is time to " \
-            "run. She is ready and so am I. I stole Daniel's pocketbook this " \
-            "afternoon when he left his jacket hanging on the easel in the " \
-            "attic. I jump every time I hear a footstep on the stairs, " \
-            "certain that the theft has been discovered and that I will " \
-            "be caught. The SS officer visits less often now " \
-            "that he is sure"), 'florence')) # doctest: +ELLIPSIS
-    ('florence', -307.5473096791...)
-    """
-    def worker(message, key_length, fitness):
-        splits = every_nth(sanitised_message, key_length)
-        key = ''.join([chr(-caesar_break(s)[0] % 26 + ord('a'))
-                       for s in splits])
-        plaintext = beaufort_decipher(message, key)
-        fit = fitness(plaintext)
-        return key, fit
-    sanitised_message = sanitise(message)
-    results = starmap(worker, [(sanitised_message, i, fitness)
-                               for i in range(1, max_key_length+1)])
-    return max(results, key=lambda k: k[1])
+        breaks = pool.starmap(column_transposition_break_worker,
+                              helper_args, chunksize)
+        best = max(breaks, key=lambda k: k[1])
+        return math.trunc(len(message) / len(best[0][0])), best[1]
+scytale_break = scytale_break_mp
 
 
 def pocket_enigma_break_by_crib(message, wheel_spec, crib, crib_position):

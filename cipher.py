@@ -507,6 +507,52 @@ def scytale_decipher(message, rows):
         fillcolumnwise=True, emptycolumnwise=False)
 
 
+def railfence_encipher(message, height, fillvalue=' '):
+    """Railfence cipher
+
+    >>> railfence_encipher('hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers', 2, fillvalue='!')
+    'hlohraateerishsslnpeefetotsigaleccpeselteevsmhatetiiaogicotxfretnrifneihr!'
+    >>> railfence_encipher('hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers', 3, fillvalue='!')
+    'horaersslpeeosglcpselteevsmhatetiiaogicotxfretnrifneihr!!lhateihsnefttiaece!'
+    >>> railfence_encipher('hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers', 5, fillvalue='!')
+    'hresleogcseeemhetaocofrnrner!!lhateihsnefttiaece!!ltvsatiigitxetifih!!oarspeslp!'
+    >>> railfence_encipher('hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers', 10, fillvalue='!')
+    'hepisehagitnr!!lernesge!!lmtocerh!!otiletap!!tseaorii!!hassfolc!!evtitffe!!rahsetec!!eixn!'
+    """
+    sections = chunks(message, (height - 1) * 2, fillvalue=fillvalue)
+    # Add the top row
+    rows = [s[0] for s in sections]
+    # process the middle rows of the grid
+    for r in range(1, height - 1):
+        rows += [s[r] + s[-r] for s in sections]
+    # process the bottom row
+    rows += [s[height - 1] for s in sections]
+    return ''.join(rows)
+
+def railfence_decipher(message, height):
+    """Railfence decipher. Assumes the message is already the correct length.
+
+    >>> railfence_decipher('hlohraateerishsslnpeefetotsigaleccpeselteevsmhatetiiaogicotxfretnrifneihr!', 2).strip('!')
+    'hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers'
+    >>> railfence_decipher('horaersslpeeosglcpselteevsmhatetiiaogicotxfretnrifneihr!!lhateihsnefttiaece!', 3).strip('!')
+    'hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers'
+    >>> railfence_decipher('hresleogcseeemhetaocofrnrner!!lhateihsnefttiaece!!ltvsatiigitxetifih!!oarspeslp!', 5).strip('!')
+    'hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers'
+    >>> railfence_decipher('hepisehagitnr!!lernesge!!lmtocerh!!otiletap!!tseaorii!!hassfolc!!evtitffe!!rahsetec!!eixn!', 10).strip('!')
+    'hellothereavastmeheartiesthisisalongpieceoftextfortestingrailfenceciphers'
+    """
+    n_secs = len(message) // ((height - 1) * 2)
+    downrows = [message[:n_secs]]
+    uprows = []
+    for r in range(height-2):
+        midrow = message[(2 * r + 1) * n_secs:(2 * r + 1) * n_secs + n_secs * 2]
+        downrows += [''.join([midrow[i] for i in range(0, len(midrow), 2)])]
+        uprows = [''.join([midrow[i] for i in range(1, len(midrow), 2)])] + uprows
+    downrows += [message[-n_secs:]]
+    rows = downrows + uprows
+    return ''.join(letter for section in zip(*rows) for letter in section)
+
+
 class PocketEnigma(object):
     """A pocket enigma machine
     The wheel is internally represented as a 26-element list self.wheel_map, 
