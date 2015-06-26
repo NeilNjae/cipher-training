@@ -3,19 +3,19 @@
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABAgAGBQJU/tHDAAoJEJPB2e07Pgbq++kP/A83lU32kU1Aa/1TiPNidPq+
-BccO3nfOvfkLi7T4AfWJVqRJ4GAlG38zUanoq4ChvJS/IdG6wvfnjzK/5UEpiCeU
-FbA8vxrex6j4NJDDwH8RZ3F1Cuuo9sLe/cc6AH32CB/8x2cy7BmxQgkYW+23HjwG
-hf0Jrzoul0Dugf6FyZEv/xTeKiVtpsNVqICMf0SMEjZVgP6M0+1+DVhWPfcdALTJ
-V9rPZkmvw6j9boz1pJiyBhMb+rhfpZitzj6QKP9QWz4bKGva2nn0gfmKHtSYAEcK
-pzhiQ5dgXg4+tvNPBWu/IHn5886AlNu1a5SVrLzziPBrUmNv0nZUn2PdL20GRX1R
-/VDgmj3TgiqGpCj8ilYZfd/VPMr1DwaAsO+9cStvzVqOI3jR1E7WJkhaGbGCGIwY
-p620q84dNFT5fCYj3/04s6YQrm/o9DYTarsZzAMpyIeJi4S8VAelvSH96GSHuZzU
-sMT8vWQ9L9aW2mhEiZUc+cw0RZT+1dYo52C5r+pkVzq7QuowedUtcdPGJC7dG1UT
-Aa7e56/ipgCRe9BogsBD/WUBviReJXSvWzkhyadpnxSDDP6MxI+vc/vuJDwQFVII
-UlMX6WIlwQMskMdpOn7ptLtqIHZr1vCzVUz02NSAccVm2l/HBxEB6TOMEmUDDv+b
-fg6bXpOIP8XLjeWH9jyC
-=X0y5
+iQIcBAABAgAGBQJVjTfBAAoJEJPB2e07PgbqTncP/3FMR/BFep74vhXlWpH6Nslz
+184tyMspTMDJgebQIxXVrTKHjSmxvqqo1NHYx4phCVRPyLPgNUyIKHbrfLmnfjRs
+ROwl6nuV7kGEgrE5BbXmVtGhRHgJaSAJk0/kzynuFxP8AAwekHpGOF7bRLHKHyIQ
+BjFPLDV/1f9iChuHigQcAbn4s9xtaUoh1RSvuimjuesubHfGk6U4KeEpUn+M1/KG
+QpMJ50KNrg1OTCmQQlO2GVvwapBN52QKH4RRHRNJsT5amAmwIIweE/QHHeCgDaSe
+sxA+DxR2/RvGTFEUGCFzakmlpjGzH0LfSShH75IwqZz3ZPW212z/eYcvsrCGDx3K
+aLJhjnP7CNdcQVVXUcvWQa4XmrTQtFB2FPvOeq9kkdkkD7HgnkfUzkqSbtLXsVP2
+pXxrjO5PDWIZCUN0XUSFmZTVPMxPYkFOqf7SVKtAUbgCaGaakW+vFG9f0BoqeWfF
+qAc1Tka3jk4uLM454e4rUY9mesjh5TB0ah0qs4/+mVCfuxNyxBTvke0s0c/G01zq
+cDmfcn6WNhsFaG/OR8clpMJgCC/gBXqrLn8PA+VY/wQC1vK/+Wcv/P/0/FLgWQnY
+PBqL+Yd8n/0lOzPij3zXc0xIbxJOK7zc6GV049yc3oUh4USCluaB4Qi5CxUgGYle
+D/6sRpbs/oiQQ8u1hQnL
+=7s7p
 -----END PGP SIGNATURE-----
 
 ```
@@ -30,7 +30,7 @@ fg6bXpOIP8XLjeWH9jyC
 size     exec  file                                    contents                                                                                                                         
                ./                                                                                                                                                                       
 384              .gitignore                            a93de2ae5c2a47a38599751d1f914566569dfa09dd1778e207117db6c71421dd                                                                 
-92               .~lock.course-blurb.docx#             0bdfd8f2a17e58dac1fb9237b3edfa8ab317e56be208906fd587ae065d35d667                                                                 
+92               .~lock.course-blurb.odt#              e8c62f2157e4927e2f0146b9c4398d95da0644a290cd95fb1c33e5c2df107e19                                                                 
                  2012/                                                                                                                                                                  
 1678               1a.ciphertext                       c7c16198650e7d91577683acca664a0e588ac5474046a028dea3d9dc4b388df8                                                                 
 1678               1a.plaintext                        1b34de5b1d1422a3089c54d751dfd3938449c98526137a0b8b3b6561a700f9b5                                                                 
@@ -95,8 +95,8 @@ size     exec  file                                    contents
 5566017          count_2w.txt                          781c0596c3eea532d30bef9f3dba1d5137d652f00376260822c761a7584dfb8c                                                                 
 220441           count_3l.txt                          8702c95530c7d0d182ab94dc03ed7681fcf969819f6db011a58de31411dc6365                                                                 
 320508           count_big.txt                         3ba257fba1934bd138413d8274e79b56c5992431a27692fd562929aa43ec01a3                                                                 
-5783             course-blurb.docx                     ab8cc45fd9326868f9f8a650a702d8da4fc78d8c7097a987d1702366902b83cd|8855cca874b4d160b33ea2049528d9f36b17f765a887adcb9f0170aecf7ca85b
-33197            course-blurb.odt                      b08569f4133c725170e0a2a20b3133ebdc813e6f458f719ba450aee3008febb0|9a489aa04506c6ce98f322202c6f46e19afde4595850583565b79844b73578f5
+6065             course-blurb.docx                     61d637b2b464c7ac6766692b4237db34ace6159ee84b992138845ef586fc2cf4|f9dbc2e084e7c6149d085537e2276dfec5584e8e54b2be7ab4123137f1a52f62
+43572            course-blurb.odt                      5d2d56d32acd09609a3d585f80580477db2d026f7850c5fb12a3a7f8bc8d6f00|42253fe8e1d2a1d946c4593ba774fd22f5e4b2db0929699df80060039913d6cf
 8411             norms.pyc                             ac7a18765c7bcc27e406d8f38d943408097b3384a271502185d53482e6ec0da7|002b186e716cec64869a00bd2d72e16614931e696daa0cf3529d634a0f270e42
 4538523          shakespeare.txt                       6f9c770efced5c3d87efa6197cd3091b982341372e36c6357f865df91ddecde6                                                                 
 592309           sherlock-holmes.txt                   0027de6f4110440ea51d67a2f3af3484898c630808f13b1d4db108e6283e67a3|2034ee1ebdec47e839607124d22b674d4614e1cc6209d758f7b6e99e69ae8e08
