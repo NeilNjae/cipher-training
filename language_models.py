@@ -1,10 +1,17 @@
+"""Language-specific functions, including models of languages based on data of
+its use.
+"""
+
 import string
-import norms
 import random
+import norms
 import collections
 import unicodedata
 import itertools
 from math import log10
+import os 
+
+unaccent_specials = ''.maketrans({"’": "'"})
 
 def letters(text):
     """Remove all non-alphabetic characters from a text
@@ -16,7 +23,7 @@ def letters(text):
     return ''.join([c for c in text if c in string.ascii_letters])
 
 def unaccent(text):
-    """Remove all accents from letters. 
+    """Remove all accents from letters.
     It does this by converting the unicode string to decomposed compatability
     form, dropping all the combining accents, then re-encoding the bytes.
 
@@ -31,13 +38,14 @@ def unaccent(text):
     >>> unaccent('HÉLLÖ')
     'HELLO'
     """
-    return unicodedata.normalize('NFKD', text).\
+    translated_text = text.translate(unaccent_specials)
+    return unicodedata.normalize('NFKD', translated_text).\
         encode('ascii', 'ignore').\
         decode('utf-8')
 
 def sanitise(text):
     """Remove all non-alphabetic characters and convert the text to lowercase
-    
+
     >>> sanitise('The Quick')
     'thequick'
     >>> sanitise('The Quick BROWN fox jumped! over... the (9lazy) DOG')
@@ -53,7 +61,7 @@ def sanitise(text):
 def datafile(name, sep='\t'):
     """Read key,value pairs from file.
     """
-    with open(name, 'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), name), 'r') as f:
         for line in f:
             splits = line.split(sep)
             yield [splits[0], int(splits[1])]
@@ -67,40 +75,40 @@ normalised_english_bigram_counts = norms.normalise(english_bigram_counts)
 english_trigram_counts = collections.Counter(dict(datafile('count_3l.txt')))
 normalised_english_trigram_counts = norms.normalise(english_trigram_counts)
 
-with open('words.txt', 'r') as f:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'words.txt'), 'r') as f:
     keywords = [line.rstrip() for line in f]
 
 
 def weighted_choice(d):
-	"""Generate random item from a dictionary of item counts
-	"""
-	target = random.uniform(0, sum(d.values()))
-	cuml = 0.0
-	for (l, p) in d.items():
-		cuml += p
-		if cuml > target:
-			return l
-	return None
+    """Generate random item from a dictionary of item counts
+    """
+    target = random.uniform(0, sum(d.values()))
+    cuml = 0.0
+    for (l, p) in d.items():
+        cuml += p
+        if cuml > target:
+            return l
+    return None
 
 def random_english_letter():
-	"""Generate a random letter based on English letter counts
-	"""
-	return weighted_choice(normalised_english_counts)
+    """Generate a random letter based on English letter counts
+    """
+    return weighted_choice(normalised_english_counts)
 
 
 def ngrams(text, n):
     """Returns all n-grams of a text
     
     >>> ngrams(sanitise('the quick brown fox'), 2) # doctest: +NORMALIZE_WHITESPACE
-    ['th', 'he', 'eq', 'qu', 'ui', 'ic', 'ck', 'kb', 'br', 'ro', 'ow', 'wn', 
+    ['th', 'he', 'eq', 'qu', 'ui', 'ic', 'ck', 'kb', 'br', 'ro', 'ow', 'wn',
      'nf', 'fo', 'ox']
     >>> ngrams(sanitise('the quick brown fox'), 4) # doctest: +NORMALIZE_WHITESPACE
-    ['theq', 'hequ', 'equi', 'quic', 'uick', 'ickb', 'ckbr', 'kbro', 'brow', 
+    ['theq', 'hequ', 'equi', 'quic', 'uick', 'ickb', 'ckbr', 'kbro', 'brow',
      'rown', 'ownf', 'wnfo', 'nfox']
     """
     return [text[i:i+n] for i in range(len(text)-n+1)]
 
-    
+
 class Pdist(dict):
     """A probability distribution estimated from counts in datafile.
     Values are stored and returned as log probabilities.
@@ -125,16 +133,15 @@ Pl = Pdist(datafile('count_1l.txt'), lambda _k, _N: 0)
 P2l = Pdist(datafile('count_2l.txt'), lambda _k, _N: 0)
 P3l = Pdist(datafile('count_3l.txt'), lambda _k, _N: 0)
 
-def Pwords(words): 
+def Pwords(words):
     """The Naive Bayes log probability of a sequence of words.
     """
     return sum(Pw[w.lower()] for w in words)
 
-def Pwords_wrong(words): 
+def Pwords_wrong(words):
     """The Naive Bayes log probability of a sequence of words.
     """
     return sum(Pw_wrong[w.lower()] for w in words)
-
 
 def Pletters(letters):
     """The Naive Bayes log probability of a sequence of letters.
@@ -142,13 +149,13 @@ def Pletters(letters):
     return sum(Pl[l.lower()] for l in letters)
 
 def Pbigrams(letters):
-    """The Naive Bayes log probability of the bigrams formed from a sequence 
+    """The Naive Bayes log probability of the bigrams formed from a sequence
     of letters.
     """
     return sum(P2l[p] for p in ngrams(letters, 2))
 
 def Ptrigrams(letters):
-    """The Naive Bayes log probability of the trigrams formed from a sequence 
+    """The Naive Bayes log probability of the trigrams formed from a sequence
     of letters.
     """
     return sum(P3l[p] for p in ngrams(letters, 3))
@@ -161,8 +168,8 @@ def cosine_similarity_score(text):
     >>> cosine_similarity_score('abcabc') # doctest: +ELLIPSIS
     0.26228882...
     """
-    return norms.cosine_similarity(english_counts, 
-        collections.Counter(sanitise(text)))
+    return norms.cosine_similarity(english_counts,
+                                   collections.Counter(sanitise(text)))
 
 
 if __name__ == "__main__":
