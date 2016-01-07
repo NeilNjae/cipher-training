@@ -3,19 +3,19 @@
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWjpYtAAoJEJPB2e07PgbqRXUP/jIADsBXAgHR7JTnNp11G6Bj
-ne+9n8CJ/Kqf2rRVzVWLePPildK6AkDtKKulJsVNJ+cD7Kt+C2v6GR7DoXReh3ak
-Dp14k5TQ7ta9kP01e+p7eNZ5khn7sHJy1atBVZ7NYP5oSvr20Wjs5Hc/v33sRPAq
-2D0P1hRD7lrv/M5PG1WBXuhnE+QsuC63g7FQu/4/J7uaFmoOCq75seYMWJAL0LPY
-VZCuNB4/45f/WoPY0M9LqG4uOBI0snmoVLFJV0y9GesP9qmzxSsNGsWymeBIU/+x
-i7vc45Txb+KQjX9crl+A3PBrm8NpTxEQGi4+zt9B+3TwsmcAgwnM3316JJrsLG0V
-cVlqpZ0CmBcKj2R+Z2+UDe5dfPIb4rIk9b3KY7e2nYLh5pBjyFiPxJf/hkit56vs
-ENLyvXx1IoEoR9VJaTRCjTz+ViwMFEQFU6pqsj6yH6qS6pekYIENggRyol6q2qPt
-dHG7SgZtB2ynowJ7kQHs90S7zHhY7XCOENLT93gRSKfYbu4lOni5P2OFrfMH6tjR
-fbB5rNPTJA0k6i57fi22i7I5kFt90EyitXgBZaoR23HlXIhIKATIrd3BWLB68VFd
-1x2VrcgjNoDPQWGoNoRorJP4p68FVqtbKXbGEXYfLAJfNwW6FCEQ9Kg83OFkUOyP
-r7Hd2gCiTxL10XeabFEJ
-=exxP
+iQIcBAABCAAGBQJWjpaaAAoJEJPB2e07PgbqncwP/39wV3Bk5fXUdwip7doeWWfN
+JSk7b29Oma4hWxjYeSuqirTlW8KjbgTR1xwtWgY6+T/9weZRoIf6L5hu99NKlEeV
+jn9RTendlkYtyo2hOjYJ4e3EkRJ+10FtFNTYxfD2c5HjGSaXiZHazI+DhlBlGtjy
+CKyHnqjH65gPUKC34ec0XWN1M7uLQS46NeLyS6MMU1GWNws4hjae4A3V1mw4sJ3U
+xNSta9B0RZfTpxy7HPv9QOJhMFgup22lbaneKzIhyRKltyKcE87ITyDtdutSe0cR
+tHo/Ks1CpkNhFXhQ0GZOXDXhtt5EhuKsmuQkNVRoRYHA2pbBOWedke8pMtRqi3vb
+93GxvYNXxNm5NwiJkhG65T4pjr/u3toEuEgcq43SOq3kViLnM0ztoqt4SbOOM/uo
+MO2wsbTNHn/bFKbR7q99KRf6Q4oEdQSmX2HQCFRSYk8G6tt/p2xnhiF6fmwMryql
+zbR9c+1a9nA8eqkhIBfyE9tOzuQAiorepWLU/oOBNv7+9vKBLlcjWeQKr8m1IS9B
+FaaDrm9y4LiKIFUq0gO5lfkDWLSZcsHQlHDA4euZZLoC6NMYZ8zI+4x6qp0l+rT4
+bDw2nTEHloJrWFuRA04pz8kHjaU8y/a7wAtuix6mu626hm6uoO1UtXhI415kccgX
+jBGoQt3Tr+iXFti9N7WA
+=ZggE
 -----END PGP SIGNATURE-----
 
 ```
@@ -95,8 +95,8 @@ size     exec  file                                            contents
 514              caesar_break_parameter_trials.csv             6586223bcc00e06e3ff79d107202d6c29ef962a6dd544add00610c5907407e85|1cb7cc77831ef3ef4f994a9ea77e82a841b38acdde45ede9cedbe7a54f1e8e46
 135303           challenge6.ipynb                              5b37a8b10db4c8d9831827a2acdffdcdb65369557d15b3e08a900ee8e088da73                                                                 
 75506            challenge7.ipynb                              ee9a99fa7a9845ad7db77199927fe8ad1d05a6b0272e50d8175e874e7a3e4cdf                                                                 
+318              cipher-training.sublime-project               58e5d5b4e54fb29abecaef2d41266e3355adccb8b6a70bd595e509bd07c16587                                                                 
 42922            cipher.py                                     58637b8946b4fb973b19a374a2066a896d86c928dacaa1ccd2252e6f8bb6e810                                                                 
-120              cipher.sublime-project                        6eeb5379b3486e9b65567acb8ce7d3fe56261019c13c99d10fa00818df4d0409                                                                 
 11564            count_1edit.txt                               3bf563ef032ba151ec1a4b2d1f33f50c49f4a47e4dc5b8152394bc5b63f57655|b5fbacbebcc25f5011ce97bc9ac967a09c50eef28b4aa98379a6c426df6ac08b
 4956241          count_1w.txt                                  51df159fd3de12b20e403c108f526e96dbd723d9cabdd5f17955cdc16059e690                                                                 
 9270             count_2l.txt                                  bc2895f800189070c193907cd8bca956ad65fed2e25c14300d4bb5b6a243ba99                                                                 
