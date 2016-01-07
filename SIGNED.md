@@ -3,19 +3,19 @@
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWTz//AAoJEJPB2e07PgbqUTQP/j20+3NLhv0S3TDedIdJ1oo5
-Arov4Zdxhf9ULiutRmLu3vw1TixDZbOnExPDOOcxx/C2d/tzRwNfUSfdbyT5JyGu
-ulgXMgDeBr7TSBIecECXqU0jS/eqkLt3p+EIOtmu1p5TYwVK3Qk4zhA6fZS+wt58
-i5JoFtjIEo+jnrzg8YK4GYDo3p3fL5H5HVQvD9RmUtnfWYgrEk7/z27vAKi4sq/H
-yCl5BT91didGUbj1HUTIpQMqrANmYEJ0tKIYHK1BJL9S9rg+Ja2wAzAa0G6ssBrR
-ZR3VI2uP9Pn9PDBcFrAP10553vskz2E+uGCQsS9rsizuLq8lJ4bLvETOynOVTlEk
-4mnvl5iPLRj8BuszalkwnpQ3B0KMiwy1n0/3AlfXmJmVoUzquSUr1wHmiyGo62sJ
-ODTUnYVJvF6UmFuPvL8WOT5WbLX2IeYnY1/Inm6SZpXpTfGpQrC5OD2SCnamOXQC
-o4I779USGVvHjn19yEui7L4ZNUhjlR368vmVcZ1pdmUwQP7gGb2zYrdsojcXfExA
-ToR4ZrctweuaLpJrKIfeR7XbacpFFn43OCc9r7tJex5xcrK8u3BPlYYXd2VdZu7G
-4BxBT4E//CuutVJMmiPK5kWEhIjcZJvTDS+4vvv5LZ7M6pE7kf5Je1DKyWkDbj4j
-YrLb9Ke1hxgoTj1qtyz2
-=XwVA
+iQIcBAABCAAGBQJWjphGAAoJEJPB2e07Pgbq0+wQAII6vI8FpwiD0kEdLDw/2CH3
+9DjXHEe8FEf5cSt7jfg8uwvUO703FzjiR9fZvy+VcryE4BM4PKaJzb0D1t2NifV8
+IsCccX1YZG5R5RruPmnQvmHZQn2JWk34lsHjjwUvv6QWbMZPkdIlMW5lt/QG81vy
+IuFmEhoqzp8QwKIhJla/4/buWGgJRliGdjLMrzn3xWgIqVOtSLtpIhvpXT9sIpfa
+5/YnE0H4QcT+FgOxkvn9htMLK2FMMY1Oh4eSha0vcp028A7xYTysN766I1a2Vm87
+jpe/jZ04qUxrVgF5d/hNr5wWRgEChrATTrL6Xj3jtxHNbbV+6+wDew5h1FJ38NdT
+auILHtRkxmRaUl+39yehxRSzOz6NSRFbqNsy2hpcIxFMkre+9WYCQgqoEbtlLiaJ
+Wo2Z2t2WIQL3tHDask0k9PkUVGi7YcOxpNJ+Xcr1s028YeKpcFqS6cDMGDV3zCbj
+KyRWMsxBx2plhLcXcVQkLwKyTe17XrvBB02jzKP2GnNmaHeYezhbmnl5yrlGiV4r
+eQgfo6Jw7L11IHn3QFYeR5B6RSBqn46Eld1VXmYREY9mwfeFyvKpQnn+nLilBQn0
+w6Oss26B2HHFAO4xcUAdd91AFylBlGle9egANDpUZV0lrIXsiyvSDov116VnRFDS
+caoDSNKSuugHWQZOFMx+
+=vYxp
 -----END PGP SIGNATURE-----
 
 ```
@@ -84,12 +84,15 @@ size     exec  file                                                             
 1565               7b.ciphertext                                                          adeef9d9e985c534c40acee5c6734d04195895a32efd9452a89cafef1fdc91b8                                                                 
 182                mona-lisa-words.txt                                                    d7d05c9c86f6282fa66df5f4ca795c89f01cef88a9ce8c921ce4484b3d6078a7                                                                 
 1190               solutions.txt                                                          bd14d8cb1b6694ee4b07d7f38f4df7931e89c10247f101878b6056647bf67cee                                                                 
+                 2014/                                                                                                                                                                                                     
                  2015/                                                                                                                                                                                                     
+10000              pysol.zip                                                              64e25c247e877f37285db635fcb5dea101e0c531fdbfe5000bcc088c22caad79|68d878fb019198e691d321be1dd6744fae0b48da9c4e705c34f96e351b00fbed
+2195               sol.py.zip                                                             4c22e57eaacd8a91ef9b0c338429e400210a03dec9fbacec4a45fe1faed50720|1fd0a62af53125eacfa11016088451e2c58269d98aaef74c320730ebc7601b66
 18025            LICENSE                                                                  a01259a1b522cf0de95824f9860613b453153eebac468e96196d5d7dba84786c                                                                 
 429647           Programming+for+A+level+Computing+through+automated+cipher+breaking.pdf  2f4008ad7217d7902c99bbfc7394c9b9128a3073f4c5d096ef4653d753358b9d|6c1eb93f74c8e3fd5a180e80ce7b315cb642a9f5f66805a4398f6b793dd9b852
 61               README.md                                                                277247b410300ee16477b12ca54ad878d81c8061f6134e2e1cadccaf299de3a3                                                                 
 6488666          big.txt                                                                  fa066c7d40f0f201ac4144e652aa62430e58a6b3805ec70650f678da5804e87b                                                                 
-130              cipher.sublime-project                                                   8d8d02fd089174d1adc5f2eb1db2bba34eb98fe5f06c680217b0be6f419e2a9c                                                                 
+318              cipher-training.sublime-project                                          58e5d5b4e54fb29abecaef2d41266e3355adccb8b6a70bd595e509bd07c16587                                                                 
 11564            count_1edit.txt                                                          3bf563ef032ba151ec1a4b2d1f33f50c49f4a47e4dc5b8152394bc5b63f57655|b5fbacbebcc25f5011ce97bc9ac967a09c50eef28b4aa98379a6c426df6ac08b
 4956241          count_1w.txt                                                             51df159fd3de12b20e403c108f526e96dbd723d9cabdd5f17955cdc16059e690                                                                 
 9270             count_2l.txt                                                             bc2895f800189070c193907cd8bca956ad65fed2e25c14300d4bb5b6a243ba99                                                                 
