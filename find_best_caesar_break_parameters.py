@@ -72,7 +72,7 @@ def show_results():
         writer = csv.DictWriter(f, ['name'] + message_lengths, 
             quoting=csv.QUOTE_NONNUMERIC)
         writer.writeheader()
-        for scoring in sorted(scores.keys()):
+        for scoring in sorted(scores):
             scores[scoring]['name'] = scoring
             writer.writerow(scores[scoring])
 

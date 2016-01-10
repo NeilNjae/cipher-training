@@ -178,7 +178,7 @@ def cosine_similarity(frequencies1, frequencies2):
     for k in frequencies1:
         numerator += frequencies1[k] * frequencies2[k]
         length1 += frequencies1[k]**2
-    for k in frequencies2.keys():
+    for k in frequencies2:
         length2 += frequencies2[k]**2
     return numerator / (length1 ** 0.5 * length2 ** 0.5)
 
