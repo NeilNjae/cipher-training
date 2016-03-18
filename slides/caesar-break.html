@@ -112,6 +112,8 @@ How do we define "closeness"?
 
 ## Abstraction: frequency of letter counts
 
+.float-right[![right-aligned Letter frequencies](letter-frequency-treemap.png)]
+
 Letter | Count
 -------|------
 a | 489107
@@ -146,7 +148,7 @@ Letter      | i       | f       | m       | m       | p       | ifmmp
 ------------|---------|---------|---------|---------|---------|-------
 Probability | 0.06723 | 0.02159 | 0.02748 | 0.02748 | 0.01607 | 1.76244520 × 10<sup>-8</sup>
 
-(Implmentation issue: this can often underflow, so get in the habit of rephrasing it as `\( \sum_i \log p_i \)`)
+(Implmentation issue: this can often underflow, so we rephrase it as `\( \sum_i \log p_i \)`)
 
 Letter      | h       | e       | l       | l       | o       | hello
 ------------|---------|---------|---------|---------|---------|-------
