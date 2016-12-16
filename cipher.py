@@ -7,6 +7,22 @@ import numpy as np
 from numpy import matrix
 from numpy import linalg
 from language_models import *
+import pprint
+
+
+## Utility functions
+cat = ''.join
+wcat = ' '.join
+
+def pos(letter): 
+    if letter in string.ascii_lowercase:
+        return ord(letter) - ord('a')
+    elif letter in string.ascii_uppercase:
+        return ord(letter) - ord('A')
+    else:
+        return ''
+    
+def unpos(number): return chr(number % 26 + ord('a'))
 
 
 modular_division_table = [[0]*26 for _ in range(26)]
@@ -31,7 +47,7 @@ def every_nth(text, n, fillvalue=''):
     ['afkpuz', 'bglqv!', 'chmrw!', 'dinsx!', 'ejoty!']
     """
     split_text = chunks(text, n, fillvalue)
-    return [''.join(l) for l in zip_longest(*split_text, fillvalue=fillvalue)]
+    return [cat(l) for l in zip_longest(*split_text, fillvalue=fillvalue)]
 
 def combine_every_nth(split_text):
     """Reforms a text split into every_nth strings
@@ -43,7 +59,7 @@ def combine_every_nth(split_text):
     >>> combine_every_nth(every_nth(string.ascii_lowercase, 26))
     'abcdefghijklmnopqrstuvwxyz'
     """
-    return ''.join([''.join(l) 
+    return cat([cat(l) 
                     for l in zip_longest(*split_text, fillvalue='')])
 
 def chunks(text, n, fillvalue=None):
@@ -120,14 +136,24 @@ def caesar_encipher_letter(accented_letter, shift):
     >>> caesar_encipher_letter('é', 1)
     'f'
     """
+    # letter = unaccent(accented_letter)
+    # if letter in string.ascii_letters:
+    #     if letter in string.ascii_uppercase:
+    #         alphabet_start = ord('A')
+    #     else:
+    #         alphabet_start = ord('a')
+    #     return chr(((ord(letter) - alphabet_start + shift) % 26) + 
+    #                alphabet_start)
+    # else:
+    #     return letter
+
     letter = unaccent(accented_letter)
     if letter in string.ascii_letters:
+        cipherletter = unpos(pos(letter) + shift)
         if letter in string.ascii_uppercase:
-            alphabet_start = ord('A')
+            return cipherletter.upper()
         else:
-            alphabet_start = ord('a')
-        return chr(((ord(letter) - alphabet_start + shift) % 26) + 
-                   alphabet_start)
+            return cipherletter
     else:
         return letter
 
@@ -156,7 +182,7 @@ def caesar_encipher(message, shift):
     'Jgnnq Yqtnf!'
     """
     enciphered = [caesar_encipher_letter(l, shift) for l in message]
-    return ''.join(enciphered)
+    return cat(enciphered)
 
 def caesar_decipher(message, shift):
     """Decipher a message with the Caesar cipher of given shift
@@ -175,49 +201,74 @@ def caesar_decipher(message, shift):
 def affine_encipher_letter(accented_letter, multiplier=1, adder=0, one_based=True):
     """Encipher a letter, given a multiplier and adder
     
-    >>> ''.join([affine_encipher_letter(l, 3, 5, True) \
-            for l in string.ascii_uppercase])
-    'HKNQTWZCFILORUXADGJMPSVYBE'
-    >>> ''.join([affine_encipher_letter(l, 3, 5, False) \
-            for l in string.ascii_uppercase])
-    'FILORUXADGJMPSVYBEHKNQTWZC'
+    >>> cat(affine_encipher_letter(l, 3, 5, True) \
+            for l in string.ascii_letters)
+    'hknqtwzcfiloruxadgjmpsvybeHKNQTWZCFILORUXADGJMPSVYBE'
+    >>> cat(affine_encipher_letter(l, 3, 5, False) \
+            for l in string.ascii_letters)
+    'filoruxadgjmpsvybehknqtwzcFILORUXADGJMPSVYBEHKNQTWZC'
     """
+    # letter = unaccent(accented_letter)
+    # if letter in string.ascii_letters:
+    #     if letter in string.ascii_uppercase:
+    #         alphabet_start = ord('A')
+    #     else:
+    #         alphabet_start = ord('a')
+    #     letter_number = ord(letter) - alphabet_start
+    #     if one_based: letter_number += 1
+    #     cipher_number = (letter_number * multiplier + adder) % 26
+    #     if one_based: cipher_number -= 1
+    #     return chr(cipher_number % 26 + alphabet_start)
+    # else:
+    #     return letter
     letter = unaccent(accented_letter)
     if letter in string.ascii_letters:
-        if letter in string.ascii_uppercase:
-            alphabet_start = ord('A')
-        else:
-            alphabet_start = ord('a')
-        letter_number = ord(letter) - alphabet_start
+        letter_number = pos(letter)
         if one_based: letter_number += 1
         cipher_number = (letter_number * multiplier + adder) % 26
         if one_based: cipher_number -= 1
-        return chr(cipher_number % 26 + alphabet_start)
+        if letter in string.ascii_uppercase:
+            return unpos(cipher_number).upper()
+        else:
+            return unpos(cipher_number)
     else:
         return letter
 
 def affine_decipher_letter(letter, multiplier=1, adder=0, one_based=True):
     """Encipher a letter, given a multiplier and adder
     
-    >>> ''.join([affine_decipher_letter(l, 3, 5, True) \
-            for l in 'HKNQTWZCFILORUXADGJMPSVYBE'])
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    >>> ''.join([affine_decipher_letter(l, 3, 5, False) \
-            for l in 'FILORUXADGJMPSVYBEHKNQTWZC'])
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    >>> cat(affine_decipher_letter(l, 3, 5, True) \
+            for l in 'hknqtwzcfiloruxadgjmpsvybeHKNQTWZCFILORUXADGJMPSVYBE')
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    >>> cat(affine_decipher_letter(l, 3, 5, False) \
+            for l in 'filoruxadgjmpsvybehknqtwzcFILORUXADGJMPSVYBEHKNQTWZC')
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     """
+    # if letter in string.ascii_letters:
+    #     if letter in string.ascii_uppercase:
+    #         alphabet_start = ord('A')
+    #     else:
+    #         alphabet_start = ord('a')
+    #     cipher_number = ord(letter) - alphabet_start
+    #     if one_based: cipher_number += 1
+    #     plaintext_number = ( 
+    #         modular_division_table[multiplier]
+    #                               [(cipher_number - adder) % 26])
+    #     if one_based: plaintext_number -= 1
+    #     return chr(plaintext_number % 26 + alphabet_start) 
+    # else:
+    #     return letter
     if letter in string.ascii_letters:
-        if letter in string.ascii_uppercase:
-            alphabet_start = ord('A')
-        else:
-            alphabet_start = ord('a')
-        cipher_number = ord(letter) - alphabet_start
+        cipher_number = pos(letter)
         if one_based: cipher_number += 1
         plaintext_number = ( 
             modular_division_table[multiplier]
                                   [(cipher_number - adder) % 26])
         if one_based: plaintext_number -= 1
-        return chr(plaintext_number % 26 + alphabet_start) 
+        if letter in string.ascii_uppercase:
+            return unpos(plaintext_number).upper()
+        else:
+            return unpos(plaintext_number) 
     else:
         return letter
 
@@ -230,7 +281,7 @@ def affine_encipher(message, multiplier=1, adder=0, one_based=True):
     """
     enciphered = [affine_encipher_letter(l, multiplier, adder, one_based) 
                   for l in message]
-    return ''.join(enciphered)
+    return cat(enciphered)
 
 def affine_decipher(message, multiplier=1, adder=0, one_based=True):
     """Decipher a message
@@ -241,7 +292,7 @@ def affine_decipher(message, multiplier=1, adder=0, one_based=True):
     """
     enciphered = [affine_decipher_letter(l, multiplier, adder, one_based) 
                   for l in message]
-    return ''.join(enciphered)
+    return cat(enciphered)
 
 
 class KeywordWrapAlphabet(Enum):
@@ -265,7 +316,7 @@ def keyword_cipher_alphabet_of(keyword, wrap_alphabet=KeywordWrapAlphabet.from_a
     'bayeszcdfghijklmnopqrtuvwx'
     """
     if wrap_alphabet == KeywordWrapAlphabet.from_a:
-        cipher_alphabet = ''.join(deduplicate(sanitise(keyword) + 
+        cipher_alphabet = cat(deduplicate(sanitise(keyword) + 
                                               string.ascii_lowercase))
     else:
         if wrap_alphabet == KeywordWrapAlphabet.from_last:
@@ -274,7 +325,7 @@ def keyword_cipher_alphabet_of(keyword, wrap_alphabet=KeywordWrapAlphabet.from_a
             last_keyword_letter = sorted(sanitise(keyword))[-1]
         last_keyword_position = string.ascii_lowercase.find(
             last_keyword_letter) + 1
-        cipher_alphabet = ''.join(
+        cipher_alphabet = cat(
             deduplicate(sanitise(keyword) + 
                         string.ascii_lowercase[last_keyword_position:] + 
                         string.ascii_lowercase))
@@ -332,7 +383,7 @@ def vigenere_encipher(message, keyword):
     """
     shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
     pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_encipher_letter(l, k) for l, k in pairs])
+    return cat([caesar_encipher_letter(l, k) for l, k in pairs])
 
 def vigenere_decipher(message, keyword):
     """Vigenere decipher
@@ -342,7 +393,7 @@ def vigenere_decipher(message, keyword):
     """
     shifts = [ord(l) - ord('a') for l in sanitise(keyword)]
     pairs = zip(message, cycle(shifts))
-    return ''.join([caesar_decipher_letter(l, k) for l, k in pairs])
+    return cat([caesar_decipher_letter(l, k) for l, k in pairs])
 
 beaufort_encipher=vigenere_decipher
 beaufort_decipher=vigenere_encipher
@@ -428,7 +479,7 @@ def column_transposition_encipher(message, keyword, fillvalue=' ',
     if emptycolumnwise:
         return combine_every_nth(transposed)
     else:
-        return ''.join(chain(*transposed))
+        return cat(chain(*transposed))
 
 def column_transposition_decipher(message, keyword, fillvalue=' ', 
       fillcolumnwise=False,
@@ -463,7 +514,7 @@ def column_transposition_decipher(message, keyword, fillvalue=' ',
     if fillcolumnwise:
         return combine_every_nth(untransposed)
     else:
-        return ''.join(chain(*untransposed))
+        return cat(chain(*untransposed))
 
 def scytale_encipher(message, rows, fillvalue=' '):
     """Enciphers using the scytale transposition cipher.
@@ -544,14 +595,14 @@ def railfence_encipher(message, height, fillvalue=''):
     sections = chunks(message, (height - 1) * 2, fillvalue=fillvalue)
     n_sections = len(sections)
     # Add the top row
-    rows = [''.join([s[0] for s in sections])]
+    rows = [cat([s[0] for s in sections])]
     # process the middle rows of the grid
     for r in range(1, height-1):
-        rows += [''.join([s[r:r+1] + s[height*2-r-2:height*2-r-1] for s in sections])]
+        rows += [cat([s[r:r+1] + s[height*2-r-2:height*2-r-1] for s in sections])]
     # process the bottom row
-    rows += [''.join([s[height - 1:height] for s in sections])]
-    # rows += [' '.join([s[height - 1] for s in sections])]
-    return ''.join(rows)
+    rows += [cat([s[height - 1:height] for s in sections])]
+    # rows += [wcat([s[height - 1] for s in sections])]
+    return cat(rows)
 
 def railfence_decipher(message, height, fillvalue=''):
     """Railfence decipher. 
@@ -626,11 +677,11 @@ def railfence_decipher(message, height, fillvalue=''):
     down_rows = [rows[0]]
     up_rows = []
     for i in range(1, height-1):
-        down_rows += [''.join([c for n, c in enumerate(rows[i]) if n % 2 == 0])]
-        up_rows += [''.join([c for n, c in enumerate(rows[i]) if n % 2 == 1])]
+        down_rows += [cat([c for n, c in enumerate(rows[i]) if n % 2 == 0])]
+        up_rows += [cat([c for n, c in enumerate(rows[i]) if n % 2 == 1])]
     down_rows += [rows[-1]]
     up_rows.reverse()
-    return ''.join(c for r in zip_longest(*(down_rows + up_rows), fillvalue='') for c in r)
+    return cat(c for r in zip_longest(*(down_rows + up_rows), fillvalue='') for c in r)
 
 def make_cadenus_keycolumn(doubled_letters = 'vw', start='a', reverse=False):
     """Makes the key column for a Cadenus cipher (the column down between the
@@ -666,7 +717,7 @@ def make_cadenus_keycolumn(doubled_letters = 'vw', start='a', reverse=False):
     index_to_remove = string.ascii_lowercase.find(doubled_letters[0])
     short_alphabet = string.ascii_lowercase[:index_to_remove] + string.ascii_lowercase[index_to_remove+1:]
     if reverse:
-        short_alphabet = ''.join(reversed(short_alphabet))
+        short_alphabet = cat(reversed(short_alphabet))
     start_pos = short_alphabet.find(start)
     rotated_alphabet = short_alphabet[start_pos:] + short_alphabet[:start_pos]
     keycolumn = {l: i for i, l in enumerate(rotated_alphabet)}
@@ -695,7 +746,7 @@ def cadenus_encipher(message, keyword, keycolumn, fillvalue='a'):
     rotated_rows = zip(*rotated_columns)
     transpositions = transpositions_of(keyword)
     transposed = [transpose(r, transpositions) for r in rotated_rows]
-    return ''.join(chain(*transposed))
+    return cat(chain(*transposed))
 
 def cadenus_decipher(message, keyword, keycolumn, fillvalue='a'):
     """
@@ -717,7 +768,7 @@ def cadenus_decipher(message, keyword, keycolumn, fillvalue='a'):
     rotated_columns = [col[-start:] + col[:-start] for start, col in zip([keycolumn[l] for l in keyword], columns)]    
     rotated_rows = zip(*rotated_columns)
     # return rotated_columns
-    return ''.join(chain(*rotated_rows))
+    return cat(chain(*rotated_rows))
 
 
 def hill_encipher(matrix, message_letters, fillvalue='a'):
@@ -740,7 +791,7 @@ def hill_encipher(matrix, message_letters, fillvalue='a'):
     # message_chunks = chunks(message, len(matrix), fillvalue=None)
     enciphered_chunks = [((matrix * np.matrix(c).T).T).tolist()[0] 
             for c in message_chunks]
-    return ''.join([chr(int(round(l)) % 26 + ord('a')) 
+    return cat([chr(int(round(l)) % 26 + ord('a')) 
             for l in sum(enciphered_chunks, [])])
 
 def hill_decipher(matrix, message, fillvalue='a'):
@@ -889,8 +940,84 @@ def amsco_transposition_decipher(message, keyword,
     for slice in transposed_sections:
         plaintext_list[slice.index] = message[current_pos:current_pos-slice.start+slice.end][:len(message[slice.start:slice.end])]
         current_pos += len(message[slice.start:slice.end])
-    return ''.join(plaintext_list)
+    return cat(plaintext_list)
 
+
+def bifid_grid(keyword, wrap_alphabet, letter_mapping):
+    """Create the grids for a Bifid cipher
+    """
+    cipher_alphabet = keyword_cipher_alphabet_of(keyword, wrap_alphabet)
+    if letter_mapping is None:
+        letter_mapping = {'j': 'i'}
+    translation = ''.maketrans(letter_mapping)
+    cipher_alphabet = cat(collections.OrderedDict.fromkeys(cipher_alphabet.translate(translation)))
+    f_grid = {k: ((i // 5) + 1, (i % 5) + 1) 
+              for i, k in enumerate(cipher_alphabet)}
+    r_grid = {((i // 5) + 1, (i % 5) + 1): k 
+              for i, k in enumerate(cipher_alphabet)}
+    return translation, f_grid, r_grid
+
+def bifid_encipher(message, keyword, wrap_alphabet=KeywordWrapAlphabet.from_a, 
+                   letter_mapping=None, period=None, fillvalue=None):
+    """Bifid cipher
+
+    >>> bifid_encipher("indiajelly", 'iguana')
+    'ibidonhprm'
+    >>> bifid_encipher("indiacurry", 'iguana', period=4)
+    'ibnhgaqltm'
+    >>> bifid_encipher("indiacurry", 'iguana', period=4, fillvalue='x')
+    'ibnhgaqltzml'
+    """
+    translation, f_grid, r_grid = bifid_grid(keyword, wrap_alphabet, letter_mapping)
+    
+    t_message = message.translate(translation)
+    pairs0 = [f_grid[l] for l in sanitise(t_message)]
+    if period:
+        chunked_pairs = [pairs0[i:i+period] for i in range(0, len(pairs0), period)]
+        if len(chunked_pairs[-1]) < period and fillvalue:
+            chunked_pairs[-1] += [f_grid[fillvalue]] * (period - len(chunked_pairs[-1]))
+    else:
+        chunked_pairs = [pairs0]
+    
+    pairs1 = []
+    for c in chunked_pairs:
+        items = sum(list(list(i) for i in zip(*c)), [])
+        p = [(items[i], items[i+1]) for i in range(0, len(items), 2)]
+        pairs1 += p
+    
+    return cat(r_grid[p] for p in pairs1)
+
+
+def bifid_decipher(message, keyword, wrap_alphabet=KeywordWrapAlphabet.from_a, 
+                   letter_mapping=None, period=None, fillvalue=None):
+    """Decipher with bifid cipher
+
+    >>> bifid_decipher('ibidonhprm', 'iguana')
+    'indiaielly'
+    >>> bifid_decipher("ibnhgaqltm", 'iguana', period=4)
+    'indiacurry'
+    >>> bifid_decipher("ibnhgaqltzml", 'iguana', period=4)
+    'indiacurryxx'
+    """
+    translation, f_grid, r_grid = bifid_grid(keyword, wrap_alphabet, letter_mapping)
+    
+    t_message = message.translate(translation)
+    pairs0 = [f_grid[l] for l in sanitise(t_message)]
+    if period:
+        chunked_pairs = [pairs0[i:i+period] for i in range(0, len(pairs0), period)]
+        if len(chunked_pairs[-1]) < period and fillvalue:
+            chunked_pairs[-1] += [f_grid[fillvalue]] * (period - len(chunked_pairs[-1]))
+    else:
+        chunked_pairs = [pairs0]
+        
+    pairs1 = []
+    for c in chunked_pairs:
+        items = [j for i in c for j in i]
+        gap = len(c)
+        p = [(items[i], items[i+gap]) for i in range(gap)]
+        pairs1 += p
+
+    return cat(r_grid[p] for p in pairs1) 
 
 class PocketEnigma(object):
     """A pocket enigma machine
@@ -990,7 +1117,7 @@ class PocketEnigma(object):
 
         >>> pe.set_position('f')
         5
-        >>> ''.join([pe.lookup(l) for l in string.ascii_lowercase])
+        >>> cat([pe.lookup(l) for l in string.ascii_lowercase])
         'udhbfejcpgmokrliwntsayqzvx'
         >>> pe.lookup('A')
         ''
